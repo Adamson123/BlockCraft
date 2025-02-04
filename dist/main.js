@@ -105,7 +105,7 @@ const moveShape = (event) => {
         dragShape(x, y);
     }
 };
-const breakOccupiedBox = (matchedBox, dimension) => {
+const breakOccupiedBoxes = (matchedBox, dimension) => {
     const diffBox = {};
     matchedBox.forEach((box) => {
         if (!Object.keys(diffBox).includes(String(box[dimension]))) {
@@ -122,7 +122,7 @@ const breakOccupiedBox = (matchedBox, dimension) => {
         }
     });
 };
-const findOccupiedBox = () => {
+const findOccupiedBoxes = () => {
     const hoveredOnAndOccupiedBoxes = [];
     boxes.forEach((box) => {
         if (boxesOnHover.boxes.has(box.index) && box.occupied) {
@@ -141,8 +141,8 @@ const findOccupiedBox = () => {
             }
         });
     });
-    breakOccupiedBox(matchedHorizontally, "y");
-    breakOccupiedBox(matchedVertically, "x");
+    breakOccupiedBoxes(matchedHorizontally, "y");
+    breakOccupiedBoxes(matchedVertically, "x");
 };
 const moveShapeToDefaultPos = () => {
     mousedown = false;
@@ -155,7 +155,7 @@ const moveShapeToDefaultPos = () => {
         boxesOnHover.boxes.forEach((boxNumber) => {
             boxes[boxNumber - 1].toOccupied();
         });
-        findOccupiedBox();
+        findOccupiedBoxes();
         shapes = shapes.filter((shape) => shape.index !== currentShape.index);
     }
     boxesOnHover.emptyBoxesOnHover();
