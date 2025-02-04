@@ -6,7 +6,7 @@ export default class Box {
     width;
     height;
     index;
-    matched;
+    occupied;
     strokeColor;
     constructor(x, y, index) {
         this.x = x;
@@ -15,12 +15,12 @@ export default class Box {
         this.width = boxWidth;
         this.height = boxHeight;
         this.index = index;
-        this.matched = false;
+        this.occupied = false;
         this.strokeColor = defaultStrokeColor;
     }
     // `shape` is an array of objects matching the ShapeBox interface.
     shapeOver(shape) {
-        if (!shape)
+        if (!shape || this.occupied)
             return;
         for (const box of shape) {
             const gapX = box.x - this.x;
@@ -28,29 +28,32 @@ export default class Box {
             const maxGap = this.width / 2;
             const isHorizontallyAligned = gapX <= maxGap && gapX >= -(maxGap - 1);
             const isVerticallyAligned = gapY <= maxGap && gapY >= -(maxGap - 1);
-            if (isHorizontallyAligned && isVerticallyAligned && !this.matched) {
-                boxesOnHover.add(this.index);
-                if (boxesOnHover.size === shape.length) {
+            if (isHorizontallyAligned && isVerticallyAligned) {
+                boxesOnHover.boxes.add(this.index);
+                if (boxesOnHover.boxes.size === shape.length) {
                     this.color = hoverColor;
                 }
                 break;
             }
             else {
-                boxesOnHover.delete(this.index);
-                if (!this.matched) {
-                    this.color = defaultColor;
-                }
+                boxesOnHover.boxes.delete(this.index);
+                this.color = defaultColor;
             }
         }
-        if (boxesOnHover.size !== shape.length && !this.matched) {
+        if (boxesOnHover.boxes.size !== shape.length && !this.occupied) {
             this.color = defaultColor;
         }
     }
-    // Marks the box as matched and updates its style
-    toMatched() {
+    // Marks the box as occupied and updates its style
+    toOccupied() {
         this.color = matchedColor;
-        this.matched = true;
+        this.occupied = true;
         this.strokeColor = matchedStrokeColor;
+    }
+    toUnOccupied() {
+        this.color = defaultColor;
+        this.occupied = false;
+        this.strokeColor = defaultStrokeColor;
     }
 }
 const row = boardWidth / boxWidth;

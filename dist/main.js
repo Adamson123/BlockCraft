@@ -11,7 +11,7 @@ let boxes = populateBoxes();
 let shapes = populateShapes();
 // Draw all boxes. Optionally, you can pass in shape boxes (for hover effects, etc.)
 const drawBoxes = (shapeBoxes) => {
-    ctx.lineWidth = 5;
+    ctx.lineWidth = 2;
     for (const box of boxes) {
         ctx.strokeStyle = box.strokeColor;
         box.shapeOver(shapeBoxes);
@@ -24,20 +24,50 @@ const drawShape = (shape) => {
     if (!shape)
         return;
     ctx.strokeStyle = shape.strokeColor;
-    ctx.lineWidth = 5;
+    ctx.lineWidth = 2;
     ctx.fillStyle = shape.color;
     for (const box of shape.boxes) {
-        ctx.strokeRect(box.x, box.y, boxWidth, boxHeight);
-        ctx.fillRect(box.x, box.y, boxWidth, boxHeight);
+        ctx.strokeRect(box.x, box.y, box.width, box.height);
+        ctx.fillRect(box.x, box.y, box.width, box.height);
     }
+};
+const dragShape = (x, y) => {
+    if (!currentShape)
+        return;
+    // Calculate differences based on the first box position
+    const dx = x - currentShape.boxes[0].x - currentShape.width / 4;
+    const dy = y - currentShape.boxes[0].y - currentShape.height - 10;
+    currentShape.boxes.forEach((box) => {
+        box.x = box.x + dx;
+        box.y = box.y + dy;
+    });
+    draw();
 };
 const drawAllShapes = () => {
     for (const shape of shapes) {
         drawShape(shape);
     }
 };
-drawAllShapes();
-drawBoxes();
+const holdShape = (event) => {
+    mousedown = true;
+    const { x, y } = getMousePos(event);
+    for (const shape of shapes) {
+        let clicked = false;
+        for (const box of shape.boxes) {
+            if (clickedOnBox(x, y, box)) {
+                clicked = true;
+                break;
+            }
+        }
+        if (clicked) {
+            currentShape = shape;
+            currentShape.toMainShape();
+            break;
+        }
+    }
+    if (currentShape)
+        dragShape(x, y);
+};
 const draw = () => {
     ctx.clearRect(0, 0, boardWidth, boardHeight);
     drawAllShapes();
@@ -64,21 +94,9 @@ const getMousePos = (event) => {
         y: clientY - rect.top,
     };
 };
-const dragShape = (x, y) => {
-    if (!currentShape)
-        return;
-    // Calculate differences based on the first box position
-    const dx = x - currentShape.boxes[0].x - currentShape.width / 2;
-    const dy = y - currentShape.boxes[0].y - currentShape.height - 10;
-    currentShape.boxes.forEach((box) => {
-        box.x = box.x + dx;
-        box.y = box.y + dy;
-    });
-    draw();
-};
 const clickedOnBox = (mouseX, mouseY, obj) => {
-    const insideHorizontally = mouseX >= obj.x && mouseX <= obj.x + boxWidth;
-    const insideVertically = mouseY >= obj.y && mouseY <= obj.y + boxHeight;
+    const insideHorizontally = mouseX >= obj.x && mouseX <= obj.x + boxWidth + 20;
+    const insideVertically = mouseY >= obj.y && mouseY <= obj.y + boxHeight + 20;
     return insideHorizontally && insideVertically;
 };
 const moveShape = (event) => {
@@ -87,25 +105,44 @@ const moveShape = (event) => {
         dragShape(x, y);
     }
 };
-const holdShape = (event) => {
-    mousedown = true;
-    const { x, y } = getMousePos(event);
-    for (const shape of shapes) {
-        let clicked = false;
-        for (const box of shape.boxes) {
-            if (clickedOnBox(x, y, box)) {
-                clicked = true;
-                break;
+const breakOccupiedBox = (matchedBox, dimension) => {
+    const diffBox = {};
+    matchedBox.forEach((box) => {
+        if (!Object.keys(diffBox).includes(String(box[dimension]))) {
+            diffBox[String(box[dimension])] = [];
+        }
+        if (!diffBox[String(box[dimension])].includes(box))
+            diffBox[String(box[dimension])].push(box);
+    });
+    Object.keys(diffBox).forEach((boxes) => {
+        if (diffBox[boxes].length === 10) {
+            diffBox[boxes].forEach((box) => {
+                box.toUnOccupied();
+            });
+        }
+    });
+};
+const findOccupiedBox = () => {
+    const hoveredOnAndOccupiedBoxes = [];
+    boxes.forEach((box) => {
+        if (boxesOnHover.boxes.has(box.index) && box.occupied) {
+            hoveredOnAndOccupiedBoxes.push(box);
+        }
+    });
+    const matchedHorizontally = [];
+    const matchedVertically = [];
+    hoveredOnAndOccupiedBoxes.forEach((box) => {
+        boxes.forEach((box2) => {
+            if (box2.y === box.y && box2.occupied) {
+                matchedHorizontally.push(box2);
             }
-        }
-        if (clicked) {
-            console.log({ clicked });
-            currentShape = shape;
-            break;
-        }
-    }
-    if (currentShape)
-        dragShape(x, y);
+            if (box2.x === box.x && box2.occupied) {
+                matchedVertically.push(box2);
+            }
+        });
+    });
+    breakOccupiedBox(matchedHorizontally, "y");
+    breakOccupiedBox(matchedVertically, "x");
 };
 const moveShapeToDefaultPos = () => {
     mousedown = false;
@@ -113,18 +150,22 @@ const moveShapeToDefaultPos = () => {
         return;
     }
     // Call the shape's method to reset its position
-    currentShape.toDefaultPos();
-    if (boxesOnHover.size === currentShape.boxes.length) {
-        boxesOnHover.forEach((boxNumber) => {
-            boxes[boxNumber - 1].toMatched();
+    currentShape.toIdleShape();
+    if (boxesOnHover.boxes.size === currentShape.boxes.length) {
+        boxesOnHover.boxes.forEach((boxNumber) => {
+            boxes[boxNumber - 1].toOccupied();
         });
+        findOccupiedBox();
         shapes = shapes.filter((shape) => shape.index !== currentShape.index);
     }
+    boxesOnHover.emptyBoxesOnHover();
     currentShape = undefined;
     if (!shapes.length)
         shapes = populateShapes();
     draw();
 };
+drawAllShapes();
+drawBoxes();
 //mouse events
 board.addEventListener("mousemove", moveShape);
 board.addEventListener("mousedown", holdShape);

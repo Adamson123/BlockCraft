@@ -21,8 +21,8 @@ let boxes: Box[] = populateBoxes();
 let shapes: Shape[] = populateShapes();
 
 // Draw all boxes. Optionally, you can pass in shape boxes (for hover effects, etc.)
-const drawBoxes = (shapeBoxes?: { x: number; y: number }[]) => {
-    ctx.lineWidth = 5;
+const drawBoxes = (shapeBoxes?: BoxShape[]) => {
+    ctx.lineWidth = 2;
     for (const box of boxes) {
         ctx.strokeStyle = box.strokeColor;
         box.shapeOver(shapeBoxes);
@@ -35,12 +35,27 @@ const drawBoxes = (shapeBoxes?: { x: number; y: number }[]) => {
 const drawShape = (shape?: Shape) => {
     if (!shape) return;
     ctx.strokeStyle = shape.strokeColor;
-    ctx.lineWidth = 5;
+    ctx.lineWidth = 2;
     ctx.fillStyle = shape.color;
     for (const box of shape.boxes) {
-        ctx.strokeRect(box.x, box.y, boxWidth, boxHeight);
-        ctx.fillRect(box.x, box.y, boxWidth, boxHeight);
+        ctx.strokeRect(box.x, box.y, box.width, box.height);
+        ctx.fillRect(box.x, box.y, box.width, box.height);
     }
+};
+
+const dragShape = (x: number, y: number) => {
+    if (!currentShape) return;
+
+    // Calculate differences based on the first box position
+    const dx = x - currentShape.boxes[0].x - currentShape.width / 4;
+    const dy = y - currentShape.boxes[0].y - currentShape.height - 10;
+
+    currentShape.boxes.forEach((box) => {
+        box.x = box.x + dx;
+        box.y = box.y + dy;
+    });
+
+    draw();
 };
 
 const drawAllShapes = () => {
@@ -49,8 +64,26 @@ const drawAllShapes = () => {
     }
 };
 
-drawAllShapes();
-drawBoxes();
+const holdShape = (event: MouseEvent | TouchEvent) => {
+    mousedown = true;
+    const { x, y } = getMousePos(event);
+    for (const shape of shapes) {
+        let clicked = false;
+        for (const box of shape.boxes) {
+            if (clickedOnBox(x, y, box)) {
+                clicked = true;
+                break;
+            }
+        }
+        if (clicked) {
+            currentShape = shape;
+            currentShape.toMainShape();
+            break;
+        }
+    }
+
+    if (currentShape) dragShape(x, y);
+};
 
 const draw = () => {
     ctx.clearRect(0, 0, boardWidth, boardHeight);
@@ -84,27 +117,15 @@ const getMousePos = (event: MouseEvent | TouchEvent): MousePos => {
     };
 };
 
-const dragShape = (x: number, y: number) => {
-    if (!currentShape) return;
-    // Calculate differences based on the first box position
-    const dx = x - currentShape.boxes[0].x - currentShape.width / 2;
-    const dy = y - currentShape.boxes[0].y - currentShape.height - 10;
-
-    currentShape.boxes.forEach((box) => {
-        box.x = box.x + dx;
-        box.y = box.y + dy;
-    });
-
-    draw();
-};
-
 const clickedOnBox = (
     mouseX: number,
     mouseY: number,
     obj: { x: number; y: number }
-): boolean => {
-    const insideHorizontally = mouseX >= obj.x && mouseX <= obj.x + boxWidth;
-    const insideVertically = mouseY >= obj.y && mouseY <= obj.y + boxHeight;
+) => {
+    const insideHorizontally =
+        mouseX >= obj.x && mouseX <= obj.x + boxWidth + 20;
+    const insideVertically =
+        mouseY >= obj.y && mouseY <= obj.y + boxHeight + 20;
     return insideHorizontally && insideVertically;
 };
 
@@ -115,25 +136,50 @@ const moveShape = (event: MouseEvent | TouchEvent) => {
     }
 };
 
-const holdShape = (event: MouseEvent | TouchEvent) => {
-    mousedown = true;
-    const { x, y } = getMousePos(event);
-    for (const shape of shapes) {
-        let clicked = false;
-        for (const box of shape.boxes) {
-            if (clickedOnBox(x, y, box)) {
-                clicked = true;
-                break;
-            }
+const breakOccupiedBox = (matchedBox: Box[], dimension: string) => {
+    const diffBox: { [key: string]: Box[] } = {};
+    matchedBox.forEach((box: any) => {
+        if (!Object.keys(diffBox).includes(String(box[dimension]))) {
+            diffBox[String(box[dimension])] = [];
         }
-        if (clicked) {
-            console.log({ clicked });
-            currentShape = shape;
-            break;
-        }
-    }
+        if (!diffBox[String(box[dimension])].includes(box))
+            diffBox[String(box[dimension])].push(box);
+    });
 
-    if (currentShape) dragShape(x, y);
+    Object.keys(diffBox).forEach((boxes) => {
+        if (diffBox[boxes].length === 10) {
+            diffBox[boxes].forEach((box: Box) => {
+                box.toUnOccupied();
+            });
+        }
+    });
+};
+
+const findOccupiedBox = () => {
+    const hoveredOnAndOccupiedBoxes: Box[] = [];
+
+    boxes.forEach((box) => {
+        if (boxesOnHover.boxes.has(box.index) && box.occupied) {
+            hoveredOnAndOccupiedBoxes.push(box);
+        }
+    });
+
+    const matchedHorizontally: Box[] = [];
+    const matchedVertically: Box[] = [];
+
+    hoveredOnAndOccupiedBoxes.forEach((box) => {
+        boxes.forEach((box2) => {
+            if (box2.y === box.y && box2.occupied) {
+                matchedHorizontally.push(box2);
+            }
+            if (box2.x === box.x && box2.occupied) {
+                matchedVertically.push(box2);
+            }
+        });
+    });
+
+    breakOccupiedBox(matchedHorizontally, "y");
+    breakOccupiedBox(matchedVertically, "x");
 };
 
 const moveShapeToDefaultPos = () => {
@@ -143,18 +189,25 @@ const moveShapeToDefaultPos = () => {
         return;
     }
     // Call the shape's method to reset its position
-    currentShape.toDefaultPos();
+    currentShape.toIdleShape();
 
-    if (boxesOnHover.size === currentShape.boxes.length) {
-        boxesOnHover.forEach((boxNumber) => {
-            boxes[(boxNumber as number) - 1].toMatched();
+    if (boxesOnHover.boxes.size === currentShape.boxes.length) {
+        boxesOnHover.boxes.forEach((boxNumber) => {
+            boxes[(boxNumber as number) - 1].toOccupied();
         });
+        findOccupiedBox();
         shapes = shapes.filter((shape) => shape.index !== currentShape!.index);
     }
+    boxesOnHover.emptyBoxesOnHover();
+
     currentShape = undefined;
     if (!shapes.length) shapes = populateShapes();
+
     draw();
 };
+
+drawAllShapes();
+drawBoxes();
 
 //mouse events
 board.addEventListener("mousemove", moveShape);
