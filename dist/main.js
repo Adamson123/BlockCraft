@@ -9,7 +9,7 @@ let mousedown = false;
 let currentShape;
 let boxes = populateBoxes();
 let shapes = populateShapes();
-// Draw all boxes. Optionally, you can pass in shape boxes (for hover effects, etc.)
+// Draw all boxes
 const drawBoxes = (shapeBoxes) => {
     ctx.lineWidth = 2;
     for (const box of boxes) {
