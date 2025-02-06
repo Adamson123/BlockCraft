@@ -4,3 +4,14 @@ interface BoxShape {
     width: number;
     height: number;
 }
+
+interface BoxesRelationship {
+    x: {
+        event: string;
+        times: number;
+    };
+    y: {
+        event: string;
+        times: number;
+    };
+}
