@@ -1,12 +1,7 @@
-import { boxWidth, boxesOnHover, board, hoverColor } from "./globals.js";
+import { boxWidth, boxesOnHover, board, hoverColor, ctx } from "./globals.js";
 import { populateShapes, Shape } from "./shapes.js";
 import Box, { populateBoxes } from "./box.js";
-import {
-    draw,
-    drawAllShapes,
-    drawBoxes,
-    drawBoxesBoardBorder,
-} from "./draw.js";
+import { draw } from "./draw.js";
 import { clickedOnBox, getMousePosition } from "./utils.js";
 
 let mousedown = false;
@@ -95,6 +90,7 @@ const DeleteBoxesInOccupiedDimensions = () => {
             });
         }
     });
+    return occupiedBoxes;
 };
 
 const useBoxesRelationship = (boxesRelationship: BoxesRelationship[]) => {
@@ -143,6 +139,22 @@ const useBoxesRelationship = (boxesRelationship: BoxesRelationship[]) => {
     return boxx;
 };
 
+type OccupiedBoxes = ReturnType<typeof DeleteBoxesInOccupiedDimensions>;
+const annimateBoxesInOccupiedDimensions = (occupiedBoxes: OccupiedBoxes) => {
+    const drawCallback = (x: number, y: number) => {
+        draw(shapes, currentShape, boxes, { x, y });
+    };
+    Object.keys(occupiedBoxes).forEach((boxes) => {
+        const ocBoxes = occupiedBoxes[boxes];
+        if (ocBoxes.length >= 10) {
+            console.log("occupiedBoxes");
+            ocBoxes.forEach((box) => {
+                box.animate(drawCallback);
+            });
+        }
+    });
+};
+
 const resetShapePosition = () => {
     mousedown = false;
 
@@ -152,11 +164,12 @@ const resetShapePosition = () => {
     // Call the shape's method to reset its position
     currentShape.toIdleShape();
 
+    let occupiedBoxes: OccupiedBoxes = {};
     if (boxesOnHover.boxes.size === currentShape.boxes.length) {
         boxesOnHover.boxes.forEach((boxNumber) => {
             boxes[(boxNumber as number) - 1].toOccupied();
         });
-        DeleteBoxesInOccupiedDimensions();
+        occupiedBoxes = DeleteBoxesInOccupiedDimensions();
         shapes = shapes.filter((shape) => shape.index !== currentShape!.index);
     }
     boxesOnHover.emptyBoxesOnHover();
@@ -184,11 +197,10 @@ const resetShapePosition = () => {
     }
 
     draw(shapes, currentShape, boxes);
+    annimateBoxesInOccupiedDimensions(occupiedBoxes);
 };
 
-drawAllShapes(shapes);
-drawBoxes(boxes);
-//drawBoxesBoardBorder();
+draw(shapes, currentShape, boxes);
 
 //mouse events
 board.addEventListener("mousemove", moveShape);

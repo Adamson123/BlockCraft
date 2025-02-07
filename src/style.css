@@ -1,0 +1,42 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    color: white;
+    background: url("./assets/cloud.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.board {
+    /* box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5); */
+    /* border: 1px solid rgb(243, 10, 119); */
+    display: flex;
+    flex-wrap: wrap;
+    /* height: 20px; */
+
+    margin: auto;
+}
+
+.score {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgb(241, 143, 143);
+    padding: 10px;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.score div {
+    padding: 5px 15px;
+    background: red;
+    border-radius: 3px;
+    border: 2px solid rgb(255, 232, 232);
+    font-weight: bold;
+}
+.test {
+    color: rgb(237, 162, 0);
+}

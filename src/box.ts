@@ -4,6 +4,7 @@ import {
     boxHeight,
     boxWidth,
     boxesOnHover,
+    ctx,
     defaultColor,
     defaultStrokeColor,
     hoverColor,
@@ -39,7 +40,6 @@ export default class Box {
         for (const box of shape) {
             const gapX = box.x - this.x;
             const gapY = box.y - this.y;
-
             const maxGap = this.width / 2;
 
             const isHorizontallyAligned =
@@ -69,9 +69,23 @@ export default class Box {
         this.strokeColor = matchedStrokeColor;
     }
     toUnOccupied() {
+        // requestAnimationFrame(animate);
         this.color = defaultColor;
         this.isOccupied = false;
         this.strokeColor = defaultStrokeColor;
+    }
+    animate(callback: (...param: any) => void = () => {}) {
+        let x = this.x;
+        let y = this.y;
+        ctx.strokeStyle = matchedStrokeColor;
+        const animation = (currentTime: number) => {
+            ctx.clearRect(0, 0, boardWidth, boardHeight);
+            callback(boardWidth, boardHeight);
+            ctx.fillStyle = matchedColor;
+            ctx.fillRect(x, (y += 5), this.width - 2, this.height - 2);
+            requestAnimationFrame(animation);
+        };
+        animation(0);
     }
 }
 
@@ -79,12 +93,15 @@ const row = 10; //boardWidth / boxWidth;
 const column = 10; // boardHeight / boxHeight - 4;
 let count = 0;
 
+export const start = (boardWidth - row * boxWidth) / 2;
 export const populateBoxes = (): Box[] => {
     const boxes: Box[] = [];
     for (let i = 0; i < row; i++) {
         for (let j = 0; j < column; j++) {
             count++;
-            boxes.push(new Box(i * boxWidth + 25, j * boxHeight + 25, count));
+            boxes.push(
+                new Box(i * boxWidth + start, j * boxHeight + start, count)
+            );
         }
     }
     return boxes;

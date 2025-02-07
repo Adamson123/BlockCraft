@@ -105,6 +105,9 @@ const dot = "🟥";
 const _ = `🟥⬜🟥
            ⬜⬜⬜
            🟥⬜🟥`;
+const box = `🟥🟥🟥
+             🟥🟥🟥
+             🟥🟥🟥`;
 const generateShape = (shape) => {
     let x = 0;
     let y = 2;
@@ -128,7 +131,7 @@ const generateShape = (shape) => {
             });
             idleShape.push({
                 x: x * (boxWidth - idle),
-                y: getBoxYPosition(y, idle) - 30,
+                y: getBoxYPosition(y, idle),
                 width: boxWidth - idle,
                 height: boxHeight - idle,
             });
@@ -151,7 +154,7 @@ const generateShape = (shape) => {
     };
 };
 export const populateShapes = () => {
-    const allShapes = [L, l, J, j, dot, I, T, _];
+    const allShapes = [L, l, J, j, dot, I, T];
     const shapes = [];
     for (let i = 0; i < 3; i++) {
         const pickedShape = allShapes[Math.floor(Math.random() * allShapes.length)];
@@ -159,7 +162,7 @@ export const populateShapes = () => {
         const { shape, idleShape, width, heigth } = generateShape(pickedShape);
         const adjustedShape = idleShape.map((box) => ({
             ...box,
-            x: box.x + i * (boardWidth / 3) + 42,
+            x: Math.floor(box.x + i * (boardWidth / 3) + boardWidth / 10),
         }));
         const shapeIns = new Shape(shape, adjustedShape, i, width, heigth);
         shapes.push(shapeIns);

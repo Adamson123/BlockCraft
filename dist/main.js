@@ -1,7 +1,7 @@
 import { boxWidth, boxesOnHover, board, hoverColor } from "./globals.js";
 import { populateShapes } from "./shapes.js";
 import { populateBoxes } from "./box.js";
-import { draw, drawAllShapes, drawBoxes, } from "./draw.js";
+import { draw } from "./draw.js";
 import { clickedOnBox, getMousePosition } from "./utils.js";
 let mousedown = false;
 let currentShape;
@@ -78,6 +78,7 @@ const DeleteBoxesInOccupiedDimensions = () => {
             });
         }
     });
+    return occupiedBoxes;
 };
 const useBoxesRelationship = (boxesRelationship) => {
     let boxx = [];
@@ -124,6 +125,20 @@ const useBoxesRelationship = (boxesRelationship) => {
     boxx.shift();
     return boxx;
 };
+const annimateBoxesInOccupiedDimensions = (occupiedBoxes) => {
+    const drawCallback = (x, y) => {
+        draw(shapes, currentShape, boxes, { x, y });
+    };
+    Object.keys(occupiedBoxes).forEach((boxes) => {
+        const ocBoxes = occupiedBoxes[boxes];
+        if (ocBoxes.length >= 10) {
+            console.log("occupiedBoxes");
+            ocBoxes.forEach((box) => {
+                box.animate(drawCallback);
+            });
+        }
+    });
+};
 const resetShapePosition = () => {
     mousedown = false;
     if (!currentShape) {
@@ -131,11 +146,12 @@ const resetShapePosition = () => {
     }
     // Call the shape's method to reset its position
     currentShape.toIdleShape();
+    let occupiedBoxes = {};
     if (boxesOnHover.boxes.size === currentShape.boxes.length) {
         boxesOnHover.boxes.forEach((boxNumber) => {
             boxes[boxNumber - 1].toOccupied();
         });
-        DeleteBoxesInOccupiedDimensions();
+        occupiedBoxes = DeleteBoxesInOccupiedDimensions();
         shapes = shapes.filter((shape) => shape.index !== currentShape.index);
     }
     boxesOnHover.emptyBoxesOnHover();
@@ -162,10 +178,9 @@ const resetShapePosition = () => {
         });
     }
     draw(shapes, currentShape, boxes);
+    annimateBoxesInOccupiedDimensions(occupiedBoxes);
 };
-drawAllShapes(shapes);
-drawBoxes(boxes);
-//drawBoxesBoardBorder();
+draw(shapes, currentShape, boxes);
 //mouse events
 board.addEventListener("mousemove", moveShape);
 board.addEventListener("mousedown", selectShape);
