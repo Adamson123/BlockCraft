@@ -140,14 +140,18 @@ const _ = `🟥⬜🟥
 
 const box = `🟥🟥🟥
              🟥🟥🟥
-             🟥🟥🟥`;
+            `;
+
+const ___ = "🟥🟥🟥";
+
+const ____ = "🟥🟥🟥🟥";
 
 const generateShape = (shape: string) => {
     let x = 0;
     let y = 2;
     const mainShape = [];
     const idleShape = [];
-    let width = 0;
+    let width = boxWidth;
     let heigth = 0;
     for (const box of shape) {
         if (box === "\n") {
@@ -189,7 +193,7 @@ const generateShape = (shape: string) => {
 };
 
 export const populateShapes = (): Shape[] => {
-    const allShapes = [L, l, J, j, dot, I, T];
+    const allShapes = [I, dot, ___, ____]; //[L, l, J, j, dot, I, T];
     const shapes: Shape[] = [];
     for (let i = 0; i < 3; i++) {
         const pickedShape =
@@ -198,7 +202,7 @@ export const populateShapes = (): Shape[] => {
         const { shape, idleShape, width, heigth } = generateShape(pickedShape);
         const adjustedShape = idleShape.map((box) => ({
             ...box,
-            x: Math.floor(box.x + i * (boardWidth / 3) + boardWidth / 10),
+            x: box.x + i * (boardWidth / 3) + boardWidth / 10 + 5,
         }));
 
         const shapeIns = new Shape(shape, adjustedShape, i, width, heigth);

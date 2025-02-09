@@ -1,4 +1,6 @@
+import { drawInsetShadow, resetShadowValues } from "./draw.js";
 import {
+    board,
     boardHeight,
     boardWidth,
     boxHeight,
@@ -10,8 +12,12 @@ import {
     hoverColor,
     matchedColor,
     matchedStrokeColor,
+    start,
 } from "./globals.js";
 
+const image = document.querySelector<HTMLImageElement>(".smoke")!;
+image.height = boxHeight * 2;
+image.width = (boxWidth - 2) * 7;
 export default class Box {
     x: number;
     y: number;
@@ -74,15 +80,42 @@ export default class Box {
         this.isOccupied = false;
         this.strokeColor = defaultStrokeColor;
     }
-    animate(callback: (...param: any) => void = () => {}) {
-        let x = this.x;
-        let y = this.y;
-        ctx.strokeStyle = matchedStrokeColor;
-        const animation = (currentTime: number) => {
-            ctx.clearRect(0, 0, boardWidth, boardHeight);
-            callback(boardWidth, boardHeight);
-            ctx.fillStyle = matchedColor;
-            ctx.fillRect(x, (y += 5), this.width - 2, this.height - 2);
+    animate(callback: (...param: any) => void = () => {}, index: number) {
+        let width = this.width - 2;
+        let height = this.height - 2;
+        let currentFrame = 0;
+        const animation = (frame: number) => {
+            if (width <= 0 || height <= 0) {
+                console.log("Animation stopped at frame:", currentFrame);
+                if (index === 10) {
+                    callback();
+                }
+                return;
+            }
+
+            if (frame - currentFrame >= 5) {
+                currentFrame = frame;
+                ctx.clearRect(this.x - 1, this.y - 1, this.width, this.height);
+                ctx.strokeStyle = defaultStrokeColor;
+                ctx.fillStyle = defaultColor;
+                ctx.strokeRect(this.x, this.y, this.width - 2, this.height - 2);
+                ctx.fillRect(this.x, this.y, this.width - 2, this.height - 2);
+                ctx.fillStyle = matchedColor;
+                ctx.fillRect(
+                    this.x + (this.width - width) / 2,
+                    this.y + (this.height - height) / 2,
+                    (width -= 3),
+                    (height -= 3)
+                );
+                drawInsetShadow({
+                    x: this.x + (this.width - (width - 5)) / 2,
+                    y: this.y + (this.height - (height - 5)) / 2,
+                    width,
+                    height,
+                });
+                resetShadowValues();
+            }
+            console.log("Animating", { width, height, index });
             requestAnimationFrame(animation);
         };
         animation(0);
@@ -93,14 +126,13 @@ const row = 10; //boardWidth / boxWidth;
 const column = 10; // boardHeight / boxHeight - 4;
 let count = 0;
 
-export const start = (boardWidth - row * boxWidth) / 2;
 export const populateBoxes = (): Box[] => {
     const boxes: Box[] = [];
     for (let i = 0; i < row; i++) {
         for (let j = 0; j < column; j++) {
             count++;
             boxes.push(
-                new Box(i * boxWidth + start, j * boxHeight + start, count)
+                new Box(i * boxWidth + start, j * boxHeight + 10, count)
             );
         }
     }

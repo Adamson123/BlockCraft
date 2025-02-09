@@ -1,4 +1,4 @@
-import Box, { start } from "./box.js";
+import Box from "./box.js";
 import {
     boardHeight,
     boardWidth,
@@ -6,9 +6,24 @@ import {
     ctx,
     defaultColor,
     defaultStrokeColor,
+    start,
     strokeWidth,
 } from "./globals.js";
 import { Shape } from "./shapes.js";
+
+export const drawInsetShadow = (box: any) => {
+    ctx.shadowColor = "rgba(0,0,0,0.5)";
+    ctx.shadowBlur = 5;
+    ctx.shadowOffsetX = 1;
+    ctx.shadowOffsetY = 1;
+    ctx.fillRect(box.x, box.y, box.width - 5, box.height - 5);
+};
+export const resetShadowValues = () => {
+    ctx.shadowColor = "";
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+    ctx.shadowBlur = 0;
+};
 
 // Draw all boxes
 export const drawBoxes = (boxes: Box[], shapeBoxes?: BoxShape[]) => {
@@ -19,6 +34,10 @@ export const drawBoxes = (boxes: Box[], shapeBoxes?: BoxShape[]) => {
         ctx.fillStyle = box.color;
         ctx.strokeRect(box.x, box.y, box.width - 2, box.height - 2);
         ctx.fillRect(box.x, box.y, box.width - 2, box.height - 2);
+        if (box.isOccupied) {
+            drawInsetShadow(box);
+            resetShadowValues();
+        }
     }
 };
 
@@ -27,20 +46,14 @@ export const drawShape = (shape?: Shape) => {
     ctx.strokeStyle = shape.strokeColor;
     ctx.lineWidth = strokeWidth;
     ctx.fillStyle = shape.color;
-    ctx.shadowColor = "rgba(0,0,0,0.5)";
-    ctx.shadowBlur = 5;
-    ctx.shadowOffsetX = 1;
-    ctx.shadowOffsetY = 1;
+
     for (const box of shape.boxes) {
         //ctx.strokeRect(box.x, box.y, box.width - 2, box.height);
         ctx.fillRect(box.x, box.y, box.width - 2, box.height - 2);
-        ctx.fillRect(box.x, box.y, box.width - 5, box.height - 5);
+        drawInsetShadow(box);
         // drawWoodBlock(box.x, box.y, box.width, box.height);
     }
-    ctx.shadowColor = "";
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 0;
-    ctx.shadowBlur = 0;
+    resetShadowValues();
 };
 
 export const drawAllShapes = (shapes: Shape[]) => {

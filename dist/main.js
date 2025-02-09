@@ -1,4 +1,4 @@
-import { boxWidth, boxesOnHover, board, hoverColor } from "./globals.js";
+import { boxWidth, boxesOnHover, board, hoverColor, } from "./globals.js";
 import { populateShapes } from "./shapes.js";
 import { populateBoxes } from "./box.js";
 import { draw } from "./draw.js";
@@ -126,18 +126,20 @@ const useBoxesRelationship = (boxesRelationship) => {
     return boxx;
 };
 const annimateBoxesInOccupiedDimensions = (occupiedBoxes) => {
-    const drawCallback = (x, y) => {
-        draw(shapes, currentShape, boxes, { x, y });
+    const callback = () => {
+        draw(shapes, currentShape, boxes);
+        console.log("Called last");
     };
     Object.keys(occupiedBoxes).forEach((boxes) => {
         const ocBoxes = occupiedBoxes[boxes];
         if (ocBoxes.length >= 10) {
-            console.log("occupiedBoxes");
-            ocBoxes.forEach((box) => {
-                box.animate(drawCallback);
+            // const lastBoxIndex = ocBoxes[ocBoxes.length - 1].index;
+            ocBoxes.forEach((box, index) => {
+                box.animate(callback, index + 1);
             });
         }
     });
+    //draw(shapes, currentShape, boxes);
 };
 const resetShapePosition = () => {
     mousedown = false;
@@ -181,6 +183,13 @@ const resetShapePosition = () => {
     annimateBoxesInOccupiedDimensions(occupiedBoxes);
 };
 draw(shapes, currentShape, boxes);
+// window.addEventListener("resize", () => {
+//     resetBoardSize();
+//     console.log({ boardWidth }, window.innerWidth, start);
+//     boxes = populateBoxes();
+//     shapes = populateShapes();
+//     draw(shapes, currentShape, boxes);
+// });
 //mouse events
 board.addEventListener("mousemove", moveShape);
 board.addEventListener("mousedown", selectShape);
