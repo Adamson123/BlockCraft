@@ -71,8 +71,8 @@ export const drawShapesSpaceBorder = () => {
     ctx.strokeStyle = defaultStrokeColor;
     ctx.fillStyle = defaultColor;
     ctx.lineWidth = strokeWidth;
-    //ctx.strokeRect(start, boardWidth + (boxHeight - 5), boardWidth - 10, 105);
-    ctx.fillRect(start, boardWidth + (boxHeight - 10), boardWidth - 10, 105);
+    ctx.strokeRect(start, boardWidth, boardWidth - 12, 105);
+    ctx.fillRect(start, boardWidth, boardWidth - 12, 105);
 };
 
 /**

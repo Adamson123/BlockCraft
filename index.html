@@ -13,8 +13,49 @@
         <!-- Current score -->
         <!-- <div>Current</div> -->
         <!-- </div> -->
-        <img src="../src/assets/smoke.png" class="smoke" />
+        <header>
+            <div>
+                <div class="highestScore">
+                    <img
+                        src="./src/assets/images/trophy.svg"
+                        alt="highest score"
+                    /><span>Highest:</span><span>100</span>
+                </div>
+                <div class="score"><span>Score:</span><span>50</span></div>
+            </div>
+
+            <div class="menuButtons">
+                <!-- Screen -->
+                <button class="fullscreenBtn">
+                    <img
+                        src="./src/assets/images/fullscreen.svg"
+                        alt="screen"
+                    />
+                </button>
+                <!-- Sound -->
+                <button class="soundBtn">
+                    <img src="./src/assets/images/volume_up.svg" alt="sound" />
+                </button>
+                <!-- Pause -->
+                <button>
+                    <img src="./src/assets/images/pause.svg" alt="pause" />
+                </button>
+            </div>
+        </header>
+
+        <!-- <img src="../src/assets/smoke.png" class="smoke" /> -->
         <canvas class="board"></canvas>
+
+        <div class="audios">
+            <audio src="./src/assets/audios/whoosh.mp3" class="whoosh"></audio>
+            <audio class="glock">
+                <source src="./src/assets/audios/block.mp3" type="audio/mp3" />
+            </audio>
+            <audio
+                src="./src/assets/audios/descending-tones.mp3"
+                class="descending-tones"
+            ></audio>
+        </div>
     </body>
     <script type="module" src="./dist/main.js"></script>
 </html>

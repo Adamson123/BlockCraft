@@ -1,4 +1,4 @@
-import { boardHeight, boardWidth, boxHeight, ctx, defaultColor, defaultStrokeColor, start, strokeWidth, } from "./globals.js";
+import { boardHeight, boardWidth, ctx, defaultColor, defaultStrokeColor, start, strokeWidth, } from "./globals.js";
 export const drawInsetShadow = (box) => {
     ctx.shadowColor = "rgba(0,0,0,0.5)";
     ctx.shadowBlur = 5;
@@ -55,8 +55,8 @@ export const drawShapesSpaceBorder = () => {
     ctx.strokeStyle = defaultStrokeColor;
     ctx.fillStyle = defaultColor;
     ctx.lineWidth = strokeWidth;
-    //ctx.strokeRect(start, boardWidth + (boxHeight - 5), boardWidth - 10, 105);
-    ctx.fillRect(start, boardWidth + (boxHeight - 10), boardWidth - 10, 105);
+    ctx.strokeRect(start, boardWidth, boardWidth - 12, 105);
+    ctx.fillRect(start, boardWidth, boardWidth - 12, 105);
 };
 /**
  * @param shapes

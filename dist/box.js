@@ -1,8 +1,8 @@
 import { drawInsetShadow, resetShadowValues } from "./draw.js";
-import { boxHeight, boxWidth, boxesOnHover, ctx, defaultColor, defaultStrokeColor, hoverColor, matchedColor, matchedStrokeColor, start, } from "./globals.js";
-const image = document.querySelector(".smoke");
-image.height = boxHeight * 2;
-image.width = (boxWidth - 2) * 7;
+import { boxHeight, boxWidth, boxesOnHover, ctx, defaultColor, defaultStrokeColor, hoverColor, matchedStrokeColor, start, } from "./globals.js";
+// const image = document.querySelector<HTMLImageElement>(".smoke")!;
+// image.height = boxHeight * 2;
+// image.width = (boxWidth - 2) * 7;
 export default class Box {
     x;
     y;
@@ -49,8 +49,8 @@ export default class Box {
         }
     }
     // Marks the box as isOccupied and updates its style
-    toOccupied() {
-        this.color = matchedColor;
+    toOccupied(color) {
+        this.color = color; //matchedColor;
         this.isOccupied = true;
         this.strokeColor = matchedStrokeColor;
     }
@@ -67,7 +67,9 @@ export default class Box {
         const animation = (frame) => {
             if (width <= 0 || height <= 0) {
                 console.log("Animation stopped at frame:", currentFrame);
+                this.toUnOccupied();
                 if (index === 10) {
+                    //playWhooshSound();
                     callback();
                 }
                 return;
@@ -79,7 +81,7 @@ export default class Box {
                 ctx.fillStyle = defaultColor;
                 ctx.strokeRect(this.x, this.y, this.width - 2, this.height - 2);
                 ctx.fillRect(this.x, this.y, this.width - 2, this.height - 2);
-                ctx.fillStyle = matchedColor;
+                ctx.fillStyle = this.color;
                 ctx.fillRect(this.x + (this.width - width) / 2, this.y + (this.height - height) / 2, (width -= 3), (height -= 3));
                 drawInsetShadow({
                     x: this.x + (this.width - (width - 5)) / 2,
@@ -89,7 +91,6 @@ export default class Box {
                 });
                 resetShadowValues();
             }
-            console.log("Animating", { width, height, index });
             requestAnimationFrame(animation);
         };
         animation(0);

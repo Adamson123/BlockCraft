@@ -13,6 +13,11 @@ import { populateShapes, Shape } from "./shapes.js";
 import Box, { populateBoxes } from "./box.js";
 import { draw } from "./draw.js";
 import { clickedOnBox, getMousePosition } from "./utils.js";
+import { playSound, toggleFullscreen, toggleSoundMode } from "./menuButton.js";
+
+const fullscreenBtn =
+    document.querySelector<HTMLButtonElement>(".fullscreenBtn");
+const soundBtn = document.querySelector<HTMLButtonElement>(".soundBtn");
 
 let mousedown = false;
 let currentShape: Shape | undefined;
@@ -25,7 +30,7 @@ const dragShape = (x: number, y: number) => {
 
     // Calculate differences based on the first box position
     const dx = x - currentShape.boxes[0].x - currentShape.width / 4;
-    const dy = y - currentShape.boxes[0].y - currentShape.height - 10;
+    const dy = y - currentShape.boxes[0].y - currentShape.height - 30;
 
     currentShape.boxes.forEach((box: BoxShape) => {
         box.x = box.x + dx;
@@ -63,7 +68,7 @@ const moveShape = (event: MouseEvent | TouchEvent) => {
     }
 };
 
-const DeleteBoxesInOccupiedDimensions = () => {
+const resetBoxesInOccupiedDimensions = (): { [key: string]: Box[] } => {
     const hoveredOnAndOccupiedBoxes: Box[] = [];
 
     boxes.forEach((box) => {
@@ -91,12 +96,16 @@ const DeleteBoxesInOccupiedDimensions = () => {
         });
     });
 
+    const callback = () => {
+        draw(shapes, currentShape, boxes);
+        console.log("Called last");
+    };
     Object.keys(occupiedBoxes).forEach((boxes) => {
         const ocBoxes = occupiedBoxes[boxes];
         if (ocBoxes.length >= 10) {
-            console.log("occupiedBoxes");
-            ocBoxes.forEach((box) => {
-                box.toUnOccupied();
+            playSound("whoosh");
+            ocBoxes.forEach((box, index) => {
+                box.animate(callback, index + 1); //toUnOccupied();
             });
         }
     });
@@ -104,32 +113,38 @@ const DeleteBoxesInOccupiedDimensions = () => {
 };
 
 const useBoxesRelationship = (boxesRelationship: BoxesRelationship[]) => {
-    let boxx: any[] = [];
+    let occupiableBoxes: any[] = [];
 
-    const occupiedBoxes = boxes.filter((box) => !box.isOccupied);
+    const unOccupiedBoxes = boxes.filter((box) => !box.isOccupied);
     const getCoor = (event: string, dimension: string, times: number) => {
         if (event === "increased") {
-            return boxx[boxx.length - 1][dimension] + times * boxWidth;
+            return (
+                occupiableBoxes[occupiableBoxes.length - 1][dimension] +
+                times * boxWidth
+            );
         } else if (event === "decreased") {
-            return boxx[boxx.length - 1][dimension] - times * boxWidth;
+            return (
+                occupiableBoxes[occupiableBoxes.length - 1][dimension] -
+                times * boxWidth
+            );
         } else {
-            return boxx[boxx.length - 1][dimension];
+            return occupiableBoxes[occupiableBoxes.length - 1][dimension];
         }
     };
-    for (const box of occupiedBoxes) {
-        boxx = [{ x: box.x, y: box.y }];
+    for (const box of unOccupiedBoxes) {
+        occupiableBoxes = [{ x: box.x, y: box.y }];
 
         for (const box2 of boxesRelationship) {
-            if (boxx.length !== boxesRelationship.length + 1) {
+            if (occupiableBoxes.length !== boxesRelationship.length + 1) {
                 const newCoor = {
                     x: getCoor(box2.x.event, "x", box2.x.times),
                     y: getCoor(box2.y.event, "y", box2.y.times),
                 };
-                const isExist = occupiedBoxes.find(
+                const isExist = unOccupiedBoxes.find(
                     (box) => box.x === newCoor.x && box.y === newCoor.y
                 );
                 if (isExist) {
-                    boxx.push(newCoor);
+                    occupiableBoxes.push(newCoor);
                 } else {
                     break;
                 }
@@ -138,33 +153,15 @@ const useBoxesRelationship = (boxesRelationship: BoxesRelationship[]) => {
             }
         }
 
-        if (boxx.length === boxesRelationship.length + 1) {
+        if (occupiableBoxes.length === boxesRelationship.length + 1) {
             console.log("Yeah");
             break;
         } else {
-            boxx = [];
+            occupiableBoxes = [];
         }
     }
-    boxx.shift();
-    return boxx;
-};
-
-type OccupiedBoxes = ReturnType<typeof DeleteBoxesInOccupiedDimensions>;
-const annimateBoxesInOccupiedDimensions = (occupiedBoxes: OccupiedBoxes) => {
-    const callback = () => {
-        draw(shapes, currentShape, boxes);
-        console.log("Called last");
-    };
-    Object.keys(occupiedBoxes).forEach((boxes) => {
-        const ocBoxes = occupiedBoxes[boxes];
-        if (ocBoxes.length >= 10) {
-            // const lastBoxIndex = ocBoxes[ocBoxes.length - 1].index;
-            ocBoxes.forEach((box, index) => {
-                box.animate(callback, index + 1);
-            });
-        }
-    });
-    //draw(shapes, currentShape, boxes);
+    occupiableBoxes.shift();
+    return occupiableBoxes;
 };
 
 const resetShapePosition = () => {
@@ -176,16 +173,20 @@ const resetShapePosition = () => {
     // Call the shape's method to reset its position
     currentShape.toIdleShape();
 
-    let occupiedBoxes: OccupiedBoxes = {};
+    // let occupiedBoxes: OccupiedBoxes = {};
     if (boxesOnHover.boxes.size === currentShape.boxes.length) {
         boxesOnHover.boxes.forEach((boxNumber) => {
-            boxes[(boxNumber as number) - 1].toOccupied();
+            boxes[(boxNumber as number) - 1].toOccupied(
+                (currentShape as Shape).color
+            );
         });
-        occupiedBoxes = DeleteBoxesInOccupiedDimensions();
+        resetBoxesInOccupiedDimensions();
         shapes = shapes.filter((shape) => shape.index !== currentShape!.index);
     }
+    //"remove boxes that changed color when shape was dragged over them"
     boxesOnHover.emptyBoxesOnHover();
 
+    playSound();
     currentShape = undefined;
     if (!shapes.length) shapes = populateShapes();
 
@@ -201,27 +202,28 @@ const resetShapePosition = () => {
         }
     }
     if (!isSpaceAvailable) {
-        boxes.forEach((box) => {
+        playSound("descending-tones");
+        boxes.forEach((box, index) => {
             if (box.isOccupied) {
-                box.color = hoverColor;
+                setTimeout(() => {
+                    box.color = hoverColor;
+                    draw(shapes, currentShape, boxes);
+                }, index * 10);
             }
         });
     }
 
     draw(shapes, currentShape, boxes);
-    annimateBoxesInOccupiedDimensions(occupiedBoxes);
 };
 
 draw(shapes, currentShape, boxes);
 
-// window.addEventListener("resize", () => {
-//     resetBoardSize();
-//     console.log({ boardWidth }, window.innerWidth, start);
-
-//     boxes = populateBoxes();
-//     shapes = populateShapes();
-//     draw(shapes, currentShape, boxes);
-// });
+fullscreenBtn?.addEventListener("click", () => {
+    toggleFullscreen(fullscreenBtn);
+});
+soundBtn?.addEventListener("click", () => {
+    toggleSoundMode(soundBtn);
+});
 
 //mouse events
 board.addEventListener("mousemove", moveShape);

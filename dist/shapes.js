@@ -6,6 +6,7 @@ export class Shape {
     width;
     height;
     color;
+    mainColor;
     strokeColor;
     index;
     boxesRelationship;
@@ -16,15 +17,17 @@ export class Shape {
      * @param index
      * @param width
      * @param height
+     * @param color
      */
-    constructor(shape, idleShape, index, width, height) {
+    constructor(shape, idleShape, index, width, height, color) {
         this.boxes = idleShape;
         this.mainShape = shape;
         // Use structuredClone to deep clone the array of boxes
         this.idleShape = idleShape;
         this.width = width || 100;
         this.height = height || 100;
-        this.color = matchedColor;
+        this.color = color;
+        this.mainColor = color;
         this.strokeColor = matchedStrokeColor;
         this.index = index;
         this.boxesRelationship = this.getBoxesRelationship(shape);
@@ -78,11 +81,12 @@ export class Shape {
     }
     toAccomodable() {
         this.isAccomodable = true;
-        this.color = matchedColor;
+        this.color = this.mainColor;
     }
 }
 const getBoxYPosition = (times = 1, subBy = 0) => {
-    return boardHeight - (boxWidth - subBy) * times;
+    return boardHeight - (boxWidth - subBy) * times - 35;
+    // return boardHeight - 60; //(boxWidth - subBy) * times;
 };
 const L = `🟥⬜⬜
            🟥⬜⬜
@@ -156,17 +160,19 @@ const generateShape = (shape) => {
     };
 };
 export const populateShapes = () => {
-    const allShapes = [I, dot, ___, ____]; //[L, l, J, j, dot, I, T];
+    const allShapes = [I, dot, ____, L]; //[L, l, J, j, dot, I, T];
+    const allColors = [matchedColor, "red", "yellow", "green", "purple"];
     const shapes = [];
     for (let i = 0; i < 3; i++) {
         const pickedShape = allShapes[Math.floor(Math.random() * allShapes.length)];
+        const color = allColors[Math.floor(Math.random() * allColors.length)];
         // Adjust each idle shape's x position
         const { shape, idleShape, width, heigth } = generateShape(pickedShape);
         const adjustedShape = idleShape.map((box) => ({
             ...box,
             x: box.x + i * (boardWidth / 3) + boardWidth / 10 + 5,
         }));
-        const shapeIns = new Shape(shape, adjustedShape, i, width, heigth);
+        const shapeIns = new Shape(shape, adjustedShape, i, width, heigth, color);
         shapes.push(shapeIns);
     }
     return shapes;
