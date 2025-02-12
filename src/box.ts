@@ -11,9 +11,6 @@ import {
     start,
 } from "./globals.js";
 
-// const image = document.querySelector<HTMLImageElement>(".smoke")!;
-// image.height = boxHeight * 2;
-// image.width = (boxWidth - 2) * 7;
 export default class Box {
     x: number;
     y: number;
@@ -71,12 +68,14 @@ export default class Box {
         this.strokeColor = matchedStrokeColor;
     }
     toUnOccupied() {
-        // requestAnimationFrame(animate);
         this.color = defaultColor;
         this.isOccupied = false;
         this.strokeColor = defaultStrokeColor;
     }
-    animate(callback: (...param: any) => void = () => {}, index: number) {
+    animate(
+        callback: (...param: any) => void = () => {},
+        index: number | "skip"
+    ) {
         let width = this.width - 2;
         let height = this.height - 2;
         let currentFrame = 0;
@@ -85,7 +84,6 @@ export default class Box {
                 console.log("Animation stopped at frame:", currentFrame);
                 this.toUnOccupied();
                 if (index === 10) {
-                    //playWhooshSound();
                     callback();
                 }
                 return;
@@ -122,9 +120,9 @@ export default class Box {
 
 const row = 10; //boardWidth / boxWidth;
 const column = 10; // boardHeight / boxHeight - 4;
-let count = 0;
 
 export const populateBoxes = (): Box[] => {
+    let count = 0;
     const boxes: Box[] = [];
     for (let i = 0; i < row; i++) {
         for (let j = 0; j < column; j++) {

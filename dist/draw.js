@@ -58,6 +58,56 @@ export const drawShapesSpaceBorder = () => {
     ctx.strokeRect(start, boardWidth, boardWidth - 12, 105);
     ctx.fillRect(start, boardWidth, boardWidth - 12, 105);
 };
+// export const drawRemark = (draw: () => void) => {
+//     let HfontSize = 1;
+//     let PfontSize = 0;
+//     let InMax = false;
+//     let pause = false;
+//     const animate = () => {
+//         if (!pause)
+//             if (InMax) {
+//                 HfontSize -= 3;
+//             } else {
+//                 HfontSize += 3;
+//             }
+//         //ctx.clearRect(0, 0, boardHeight, boardWidth);
+//         draw();
+//         ctx.font = `${HfontSize}px boldFont`;
+//         ctx.lineWidth = 4;
+//         ctx.strokeStyle = "black";
+//         ctx.fillStyle = "skyblue";
+//         ctx.textAlign = "center";
+//         ctx.textBaseline = "middle";
+//         let text = "Good!";
+//         const position = boardWidth / 2;
+//         ctx.strokeText(text, position, position);
+//         ctx.fillText(text, position, position);
+//         if (!pause)
+//             if (InMax && PfontSize > 0) {
+//                 PfontSize -= 3;
+//             } else if (!InMax && PfontSize < 28) {
+//                 PfontSize += 3;
+//             }
+//         ctx.font = `${PfontSize}px boldFont`;
+//         // console.log({ PfontSize, HfontSize });
+//         ctx.lineWidth = 2;
+//         ctx.strokeStyle = "black";
+//         ctx.fillStyle = matchedColor;
+//         text = "+300";
+//         ctx.strokeText(text, position, position + 30);
+//         ctx.fillText(text, position, position + 30);
+//         if (HfontSize >= 48) {
+//             pause = true;
+//             setTimeout(() => {
+//                 pause = false;
+//                 InMax = true;
+//             }, 1000);
+//         }
+//         if (HfontSize <= 0) return;
+//         requestAnimationFrame(animate);
+//     };
+//     animate();
+// };
 /**
  * @param shapes
  * @param currentShape
@@ -71,4 +121,6 @@ export const draw = (shapes, currentShape, boxes, clear = { x: 0, y: 0 }) => {
     drawAllShapes(shapes);
     drawBoxes(boxes, currentShape?.boxes);
     drawShape(currentShape);
+    // resetShadowValues();
+    //drawRemark();
 };

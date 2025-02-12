@@ -14,6 +14,11 @@ export const boxesOnHover = {
         this.boxes = new Set();
     },
 };
+export const gameScore = {
+    highestScore: 0,
+    score: 0,
+    surpassedHighScore: false,
+};
 export const defaultColor = "rgba(0,0,0,0.7)"; //"rgb(250, 240, 221)";
 export const defaultStrokeColor = "rgba(0,0,0,0.3)"; //"rgba(139, 90, 43, 0.5)"; //"rgb(241, 140, 140)";
 export const hoverColor = "rgb(0,0,0, 0.5)"; //"rgb(180,180,180)";

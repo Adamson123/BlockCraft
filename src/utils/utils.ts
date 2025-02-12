@@ -1,4 +1,4 @@
-import { board, boxHeight, boxWidth } from "./globals.js";
+import { board, boxHeight, boxWidth } from "../globals.js";
 
 interface MousePos {
     x: number;

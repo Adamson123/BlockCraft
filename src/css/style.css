@@ -1,0 +1,196 @@
+:root {
+    --var-orange-color: rgb(252, 119, 71);
+    --var-red-color: rgb(250, 57, 57);
+}
+@font-face {
+    font-family: boldFont;
+    src: url("../assets/fonts/CANegroni-Black.woff2");
+}
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    color: white;
+    background: url("../assets/images/cloud.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    height: 100vh;
+    overflow: hidden;
+    padding-top: 5px;
+}
+
+.board {
+    /* box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5); */
+    /* border: 1px solid rgb(243, 10, 119); */
+    display: flex;
+    flex-wrap: wrap;
+    /* height: 20px; */
+    margin: auto;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    font-size: 14px;
+    font-family: boldFont;
+}
+header div {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.highestScoreContainer,
+.scoreContainer {
+    padding: 5px 15px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 5px;
+    border: 1px solid black;
+}
+.highestScoreContainer span,
+.scoreContainer span {
+    font-weight: bold;
+}
+.highestScoreContainer span:nth-child(3),
+.scoreContainer span:nth-child(2) {
+    color: var(--var-orange-color);
+}
+
+.highestScoreContainer {
+    position: relative;
+}
+.highestScoreContainer img {
+    position: absolute;
+    width: 37px;
+    height: 37px;
+    left: -20px;
+    rotate: -10deg;
+}
+
+button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* padding: 5px 8px; */
+    width: 40px;
+    height: 34px;
+    max-width: 40px;
+    max-height: 34px;
+    border-radius: 5px;
+    border: 1px solid black;
+    box-shadow: inset 1px -3px 2px rgba(0, 0, 0, 0.3),
+        1px 1px 5px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+.menuButtons button:first-child {
+    background-color: rgb(128, 0, 128);
+}
+.menuButtons button:nth-child(2) {
+    background-color: rgb(201, 201, 5);
+}
+.menuButtons button:nth-child(3) {
+    background-color: var(--var-red-color);
+}
+@media (max-width: 640px) {
+    .highestScoreContainer span:nth-child(2) {
+        display: none;
+    }
+}
+.game {
+    position: relative;
+}
+.remarkContainer {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    translate: -50% -40%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: boldFont;
+    transition: all 0.2s;
+    scale: 0;
+    pointer-events: none;
+    text-align: center;
+    text-wrap: nowrap;
+    gap: 5px;
+}
+
+.remarkContainer h3,
+.remarkContainer p {
+    margin: 0;
+    padding: 0;
+}
+.remarkContainer h3 {
+    color: white;
+    font-size: 30px;
+    font-weight: bolder;
+    text-shadow: -2px -2px skyblue, 2px 2px skyblue, -2px 2px skyblue,
+        2px 2px skyblue;
+}
+.remarkContainer p {
+    font-weight: bold;
+    font-size: 20px;
+    color: var(--var-orange-color);
+    margin-top: -10px;
+}
+
+.pauseContainer {
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.3);
+    inset: 0 0 0 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.pause {
+    background-color: rgb(243, 174, 149);
+    padding: 30px 40px;
+    border-radius: 20px;
+    border: 5px solid var(--var-orange-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+.pause h3 {
+    color: skyblue;
+    font-weight: bold;
+    font-size: 25px;
+    text-shadow: -1px -1px black, 1px 1px black, -1px 1px black, 1px 1px black;
+    border-radius: 5px;
+    font-family: boldFont;
+    position: absolute;
+    top: -45px;
+}
+
+.gameScoreContainer {
+    margin-bottom: 15px;
+    font-family: boldFont;
+}
+
+.gameScoreContainer span:nth-child(2) {
+    color: var(--var-orange-color);
+}
+
+.pause div:nth-child(3) {
+    display: flex;
+    gap: 30px;
+}
+.pause div:nth-child(3) button:first-child {
+    background-color: var(--var-red-color);
+    padding: 18px 27px;
+    border: none;
+}
+
+.pause div:nth-child(3) button:nth-child(2) {
+    background-color: rgb(72, 241, 72);
+    padding: 18px 27px;
+    border: none;
+}
+
+.audios {
+    display: none;
+}

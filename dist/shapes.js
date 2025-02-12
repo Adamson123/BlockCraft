@@ -88,32 +88,57 @@ const getBoxYPosition = (times = 1, subBy = 0) => {
     return boardHeight - (boxWidth - subBy) * times - 35;
     // return boardHeight - 60; //(boxWidth - subBy) * times;
 };
-const L = `🟥⬜⬜
-           🟥⬜⬜
-           🟥🟥🟥`;
-const l = `🟥⬜
-           🟥🟥`;
-const J = `⬜🟥
-           ⬜🟥
-           🟥🟥`;
-const j = `⬜🟥
-           🟥🟥`;
-const T = `🟥🟥🟥
-           ⬜🟥⬜`;
-const I = `🟥
-           🟥
-           🟥`;
-const i = `🟥
-           🟥`;
+const L3x3 = `🟥⬜⬜
+              🟥⬜⬜
+              🟥🟥🟥`;
+const L2x2 = `🟥⬜
+              🟥🟥`;
+const J2x2 = `⬜🟥
+              🟥🟥`;
+const T3x3 = `🟥🟥🟥
+              ⬜🟥⬜`;
+const I3 = `🟥
+            🟥
+            🟥`;
+const I2 = `🟥
+            🟥`;
+const I4 = `🟥
+            🟥
+            🟥
+            🟥`;
 const dot = "🟥";
-const _ = `🟥⬜🟥
-           ⬜⬜⬜
-           🟥⬜🟥`;
-const box = `🟥🟥🟥
-             🟥🟥🟥
-            `;
-const ___ = "🟥🟥🟥";
-const ____ = "🟥🟥🟥🟥";
+const box2x2 = `🟥🟥
+                🟥🟥`;
+const box3x3 = `🟥🟥🟥
+                🟥🟥🟥
+                🟥🟥🟥`;
+const line3 = "🟥🟥🟥";
+const line4 = "🟥🟥🟥🟥";
+const Z3x3 = `🟥🟥⬜
+              ⬜🟥🟥`;
+const Z2x2 = `🟥🟥
+              ⬜🟥`;
+const S3x3 = `⬜🟥🟥
+              🟥🟥⬜`;
+const S2x2 = `⬜🟥
+              🟥🟥`;
+const U2x2 = `🟥⬜
+              🟥🟥`;
+const Corner3 = `🟥🟥
+                 🟥⬜`;
+const Corner4 = `🟥🟥🟥
+                 🟥⬜⬜`;
+const SmallL = `🟥⬜
+                🟥🟥`;
+const SmallJ = `⬜🟥
+                🟥🟥`;
+const SmallT = `🟥🟥🟥
+                ⬜🟥⬜`;
+const SmallS = `⬜🟥🟥
+                🟥🟥⬜`;
+const SmallZ = `🟥🟥⬜
+                ⬜🟥🟥`;
+const TwoBlock = "🟥🟥";
 const generateShape = (shape) => {
     let x = 0;
     let y = 2;
@@ -160,7 +185,33 @@ const generateShape = (shape) => {
     };
 };
 export const populateShapes = () => {
-    const allShapes = [I, dot, ____, L]; //[L, l, J, j, dot, I, T];
+    const allShapes = [
+        dot,
+        line4,
+        line3,
+        box2x2,
+        box3x3,
+        L3x3,
+        L2x2,
+        J2x2,
+        T3x3,
+        I3,
+        I2,
+        I4,
+        Z3x3,
+        Z2x2,
+        S3x3,
+        S2x2,
+        U2x2,
+        Corner3,
+        Corner4,
+        SmallL,
+        SmallJ,
+        SmallT,
+        SmallS,
+        SmallZ,
+        TwoBlock,
+    ]; //[two, twoT, twoTw];;
     const allColors = [matchedColor, "red", "yellow", "green", "purple"];
     const shapes = [];
     for (let i = 0; i < 3; i++) {

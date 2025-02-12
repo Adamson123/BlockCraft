@@ -1,8 +1,5 @@
 import { drawInsetShadow, resetShadowValues } from "./draw.js";
 import { boxHeight, boxWidth, boxesOnHover, ctx, defaultColor, defaultStrokeColor, hoverColor, matchedStrokeColor, start, } from "./globals.js";
-// const image = document.querySelector<HTMLImageElement>(".smoke")!;
-// image.height = boxHeight * 2;
-// image.width = (boxWidth - 2) * 7;
 export default class Box {
     x;
     y;
@@ -55,7 +52,6 @@ export default class Box {
         this.strokeColor = matchedStrokeColor;
     }
     toUnOccupied() {
-        // requestAnimationFrame(animate);
         this.color = defaultColor;
         this.isOccupied = false;
         this.strokeColor = defaultStrokeColor;
@@ -69,7 +65,6 @@ export default class Box {
                 console.log("Animation stopped at frame:", currentFrame);
                 this.toUnOccupied();
                 if (index === 10) {
-                    //playWhooshSound();
                     callback();
                 }
                 return;
@@ -98,8 +93,8 @@ export default class Box {
 }
 const row = 10; //boardWidth / boxWidth;
 const column = 10; // boardHeight / boxHeight - 4;
-let count = 0;
 export const populateBoxes = () => {
+    let count = 0;
     const boxes = [];
     for (let i = 0; i < row; i++) {
         for (let j = 0; j < column; j++) {

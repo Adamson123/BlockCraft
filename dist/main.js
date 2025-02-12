@@ -1,16 +1,19 @@
-import { boxWidth, boxesOnHover, board, hoverColor, } from "./globals.js";
+import { boxesOnHover, board, hoverColor, gameScore } from "./globals.js";
 import { populateShapes } from "./shapes.js";
 import { populateBoxes } from "./box.js";
 import { draw } from "./draw.js";
-import { clickedOnBox, getMousePosition } from "./utils.js";
-import { playSound, toggleFullscreen, toggleSoundMode } from "./menuButton.js";
+import { clickedOnBox, getMousePosition } from "./utils/utils.js";
+import { playSound, toggleFullscreen, toggleSoundMode } from "./settings.js";
+import { checkLose, toggleGameState } from "./gameState.js";
+import { resetBoxesInOccupiedDimensions } from "./utils/boxUtils.js";
+import { updateScore } from "./scoring.js";
 const fullscreenBtn = document.querySelector(".fullscreenBtn");
 const soundBtn = document.querySelector(".soundBtn");
 let mousedown = false;
 let currentShape;
 let boxes = populateBoxes();
 let shapes = populateShapes();
-const dragShape = (x, y) => {
+const updateShapePosition = (x, y) => {
     if (!currentShape)
         return;
     // Calculate differences based on the first box position
@@ -22,7 +25,7 @@ const dragShape = (x, y) => {
     });
     draw(shapes, currentShape, boxes);
 };
-const selectShape = (event) => {
+const handleShapeSelection = (event) => {
     mousedown = true;
     const { x, y } = getMousePosition(event);
     for (const shape of shapes) {
@@ -40,99 +43,28 @@ const selectShape = (event) => {
         }
     }
     if (currentShape)
-        dragShape(x, y);
+        updateShapePosition(x, y);
 };
-const moveShape = (event) => {
+const handleShapeDrag = (event) => {
     if (mousedown && currentShape) {
         const { x, y } = getMousePosition(event);
-        dragShape(x, y);
+        updateShapePosition(x, y);
     }
 };
-const resetBoxesInOccupiedDimensions = () => {
-    const hoveredOnAndOccupiedBoxes = [];
-    boxes.forEach((box) => {
-        if (boxesOnHover.boxes.has(box.index) && box.isOccupied) {
-            hoveredOnAndOccupiedBoxes.push(box);
-        }
-    });
-    const matchedHorizontally = [];
-    const matchedVertically = [];
-    const occupiedBoxes = {};
-    hoveredOnAndOccupiedBoxes.forEach((box) => {
-        occupiedBoxes[box.x + "x"] = [];
-        occupiedBoxes[box.y + "y"] = [];
-        boxes.forEach((box2) => {
-            if (box2.y === box.y && box2.isOccupied) {
-                occupiedBoxes[box.y + "y"].push(box2);
-                matchedHorizontally.push(box2);
-            }
-            if (box2.x === box.x && box2.isOccupied) {
-                occupiedBoxes[box.x + "x"].push(box2);
-                matchedVertically.push(box2);
-            }
-        });
-    });
-    const callback = () => {
-        draw(shapes, currentShape, boxes);
-        console.log("Called last");
-    };
-    Object.keys(occupiedBoxes).forEach((boxes) => {
-        const ocBoxes = occupiedBoxes[boxes];
-        if (ocBoxes.length >= 10) {
-            playSound("whoosh");
-            ocBoxes.forEach((box, index) => {
-                box.animate(callback, index + 1); //toUnOccupied();
-            });
-        }
-    });
-    return occupiedBoxes;
+const checkLoseCallback = (box, lastBox) => {
+    box.color = hoverColor;
+    draw(shapes, currentShape, boxes);
+    if (lastBox.index === box.index)
+        toggleGameState();
 };
-const useBoxesRelationship = (boxesRelationship) => {
-    let occupiableBoxes = [];
-    const unOccupiedBoxes = boxes.filter((box) => !box.isOccupied);
-    const getCoor = (event, dimension, times) => {
-        if (event === "increased") {
-            return (occupiableBoxes[occupiableBoxes.length - 1][dimension] +
-                times * boxWidth);
-        }
-        else if (event === "decreased") {
-            return (occupiableBoxes[occupiableBoxes.length - 1][dimension] -
-                times * boxWidth);
-        }
-        else {
-            return occupiableBoxes[occupiableBoxes.length - 1][dimension];
-        }
-    };
-    for (const box of unOccupiedBoxes) {
-        occupiableBoxes = [{ x: box.x, y: box.y }];
-        for (const box2 of boxesRelationship) {
-            if (occupiableBoxes.length !== boxesRelationship.length + 1) {
-                const newCoor = {
-                    x: getCoor(box2.x.event, "x", box2.x.times),
-                    y: getCoor(box2.y.event, "y", box2.y.times),
-                };
-                const isExist = unOccupiedBoxes.find((box) => box.x === newCoor.x && box.y === newCoor.y);
-                if (isExist) {
-                    occupiableBoxes.push(newCoor);
-                }
-                else {
-                    break;
-                }
-            }
-            else {
-                break;
-            }
-        }
-        if (occupiableBoxes.length === boxesRelationship.length + 1) {
-            console.log("Yeah");
-            break;
-        }
-        else {
-            occupiableBoxes = [];
-        }
-    }
-    occupiableBoxes.shift();
-    return occupiableBoxes;
+const resetBoxesCallback = () => {
+    checkLose(boxes, shapes, checkLoseCallback);
+    draw(shapes, currentShape, boxes);
+    //  displayRemark();
+    // const cb = () => {
+    //     draw(shapes, currentShape, boxes);
+    // };
+    // drawRemark(cb);
 };
 const resetShapePosition = () => {
     mousedown = false;
@@ -141,43 +73,25 @@ const resetShapePosition = () => {
     }
     // Call the shape's method to reset its position
     currentShape.toIdleShape();
-    // let occupiedBoxes: OccupiedBoxes = {};
+    let noOccupiedDimension;
     if (boxesOnHover.boxes.size === currentShape.boxes.length) {
         boxesOnHover.boxes.forEach((boxNumber) => {
-            boxes[boxNumber - 1].toOccupied(currentShape.color);
+            boxes[boxNumber - 1]?.toOccupied(currentShape.color);
         });
-        resetBoxesInOccupiedDimensions();
+        noOccupiedDimension = resetBoxesInOccupiedDimensions(boxes, resetBoxesCallback);
         shapes = shapes.filter((shape) => shape.index !== currentShape.index);
+        playSound("glock");
+    }
+    else {
+        playSound("woof");
     }
     //"remove boxes that changed color when shape was dragged over them"
     boxesOnHover.emptyBoxesOnHover();
-    playSound();
     currentShape = undefined;
     if (!shapes.length)
         shapes = populateShapes();
-    let isSpaceAvailable = false;
-    //Checking if atleast one shape in the shape array is accomodatable
-    for (const shape of shapes) {
-        const occupiableBoxes = useBoxesRelationship(shape.boxesRelationship);
-        if (occupiableBoxes.length) {
-            isSpaceAvailable = true;
-            shape.toAccomodable();
-        }
-        else {
-            shape.toNotAccomodable();
-        }
-    }
-    if (!isSpaceAvailable) {
-        playSound("descending-tones");
-        boxes.forEach((box, index) => {
-            if (box.isOccupied) {
-                setTimeout(() => {
-                    box.color = hoverColor;
-                    draw(shapes, currentShape, boxes);
-                }, index * 10);
-            }
-        });
-    }
+    if (!noOccupiedDimension)
+        checkLose(boxes, shapes, checkLoseCallback);
     draw(shapes, currentShape, boxes);
 };
 draw(shapes, currentShape, boxes);
@@ -187,13 +101,33 @@ fullscreenBtn?.addEventListener("click", () => {
 soundBtn?.addEventListener("click", () => {
     toggleSoundMode(soundBtn);
 });
+//pause
+document
+    .querySelector(".pauseBtn")
+    ?.addEventListener("click", () => toggleGameState());
+//play
+document
+    .querySelector(".playBtn")
+    ?.addEventListener("click", () => toggleGameState());
+//restart
+document
+    .querySelector(".restartBtn")
+    ?.addEventListener("click", () => {
+    gameScore.score = 0;
+    gameScore.surpassedHighScore = false;
+    boxes = populateBoxes();
+    shapes = populateShapes();
+    updateScore(true);
+    toggleGameState();
+    draw(shapes, currentShape, boxes);
+});
 //mouse events
-board.addEventListener("mousemove", moveShape);
-board.addEventListener("mousedown", selectShape);
+board.addEventListener("mousemove", handleShapeDrag);
+board.addEventListener("mousedown", handleShapeSelection);
 board.addEventListener("mouseup", resetShapePosition);
 board.addEventListener("mouseout", resetShapePosition);
 //touch events
-board.addEventListener("touchmove", moveShape);
-board.addEventListener("touchstart", selectShape);
+board.addEventListener("touchmove", handleShapeDrag);
+board.addEventListener("touchstart", handleShapeSelection);
 board.addEventListener("touchend", resetShapePosition);
 board.addEventListener("touchcancel", resetShapePosition);
