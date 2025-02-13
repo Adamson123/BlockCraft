@@ -1,4 +1,4 @@
-import { boxesOnHover, board, hoverColor, gameScore } from "./globals.js";
+import { boxesOnHover, board, hoverColor, gameScore, } from "./globals.js";
 import { populateShapes } from "./shapes.js";
 import { populateBoxes } from "./box.js";
 import { draw } from "./draw.js";
@@ -9,7 +9,9 @@ import { resetBoxesInOccupiedDimensions } from "./utils/boxUtils.js";
 import { updateScore } from "./scoring.js";
 const fullscreenBtn = document.querySelector(".fullscreenBtn");
 const soundBtn = document.querySelector(".soundBtn");
+const rotateShapeBtn = document.querySelector(".rotateShapeBtn");
 let mousedown = false;
+let rotate = false;
 let currentShape;
 let boxes = populateBoxes();
 let shapes = populateShapes();
@@ -17,13 +19,23 @@ const updateShapePosition = (x, y) => {
     if (!currentShape)
         return;
     // Calculate differences based on the first box position
-    const dx = x - currentShape.boxes[0].x - currentShape.width / 4;
-    const dy = y - currentShape.boxes[0].y - currentShape.height - 30;
+    const dx = x - currentShape.boxes[0].x - currentShape.width / 2;
+    const dy = y - currentShape.boxes[0].y - currentShape.height - 15;
+    console.log(currentShape.width);
     currentShape.boxes.forEach((box) => {
         box.x = box.x + dx;
         box.y = box.y + dy;
     });
     draw(shapes, currentShape, boxes);
+};
+rotateShapeBtn.addEventListener("click", () => {
+    rotate = rotate ? false : true;
+});
+const checkLoseCallback = (box, lastBox) => {
+    box.color = hoverColor;
+    draw(shapes, currentShape, boxes);
+    if (lastBox.index === box.index)
+        toggleGameState();
 };
 const handleShapeSelection = (event) => {
     mousedown = true;
@@ -36,26 +48,32 @@ const handleShapeSelection = (event) => {
                 break;
             }
         }
-        if (clicked && shape.isAccomodable) {
+        if (clicked) {
             currentShape = shape;
-            currentShape.toMainShape();
+            !rotate && currentShape.toMainShape();
             break;
         }
     }
-    if (currentShape)
-        updateShapePosition(x, y);
+    if (currentShape) {
+        if (!rotate && currentShape.isAccomodable) {
+            updateShapePosition(x, y);
+        }
+        else {
+            currentShape.toIdleShape();
+            if (rotate) {
+                currentShape.rotate();
+                checkLose(boxes, shapes, checkLoseCallback);
+            }
+            draw(shapes, currentShape, boxes);
+            currentShape = undefined;
+        }
+    }
 };
 const handleShapeDrag = (event) => {
     if (mousedown && currentShape) {
         const { x, y } = getMousePosition(event);
         updateShapePosition(x, y);
     }
-};
-const checkLoseCallback = (box, lastBox) => {
-    box.color = hoverColor;
-    draw(shapes, currentShape, boxes);
-    if (lastBox.index === box.index)
-        toggleGameState();
 };
 const resetBoxesCallback = () => {
     checkLose(boxes, shapes, checkLoseCallback);

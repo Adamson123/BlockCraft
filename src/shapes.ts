@@ -8,50 +8,73 @@ import {
     idle,
     hoverColor,
 } from "./globals.js";
+import { shapesRotations } from "./shapesRotation.js";
 
+interface ShapeRotations {
+    shapes: BoxShape[];
+    height: number;
+}
 export class Shape {
     boxes: BoxShape[];
     mainShape: BoxShape[];
     idleShape: BoxShape[];
+    rotationsMain: ShapeRotations[];
+    rotationsIdle: ShapeRotations[];
     width: number;
     height: number;
     color: string;
     mainColor: string;
     strokeColor: string;
     index: number;
+    currentShapeIndex: number;
     boxesRelationship: BoxesRelationship[];
     isAccomodable: boolean;
 
     /**
+     * @param rotationsMain
+     * @param rotationsIdle
      * @param shape
      * @param idleShape
-     * @param index
+     * @param currentShapeIndex
      * @param width
      * @param height
      * @param color
      */
     constructor(
+        rotationsMain: ShapeRotations[],
+        rotationsIdle: ShapeRotations[],
         shape: BoxShape[],
         idleShape: BoxShape[],
         index: number,
-        width: number,
+        currentShapeIndex: number,
+
         height: number,
         color: string
     ) {
+        this.rotationsMain = rotationsMain;
+        this.rotationsIdle = rotationsIdle;
         this.boxes = idleShape;
         this.mainShape = shape;
         // Use structuredClone to deep clone the array of boxes
         this.idleShape = idleShape;
-        this.width = width || 100;
+        this.width = this.findWidth();
         this.height = height || 100;
         this.color = color;
         this.mainColor = color;
         this.strokeColor = matchedStrokeColor;
         this.index = index;
+        this.currentShapeIndex = currentShapeIndex;
         this.boxesRelationship = this.getBoxesRelationship(shape);
         this.isAccomodable = true;
     }
-
+    findWidth() {
+        return (
+            this.mainShape.reduce(
+                (sum, { x }) => (sum = x > sum ? x : sum),
+                0
+            ) + boxWidth
+        );
+    }
     toIdleShape() {
         this.boxes = structuredClone(this.idleShape);
     }
@@ -107,6 +130,20 @@ export class Shape {
         this.isAccomodable = true;
         this.color = this.mainColor;
     }
+    rotate() {
+        if (this.currentShapeIndex === this.rotationsIdle.length - 1) {
+            this.currentShapeIndex = 0;
+        } else {
+            this.currentShapeIndex++;
+        }
+        const { height, shapes } = this.rotationsMain[this.currentShapeIndex];
+        this.mainShape = shapes;
+        this.idleShape = this.rotationsIdle[this.currentShapeIndex].shapes;
+        this.boxes = this.idleShape;
+        this.width = this.findWidth();
+        this.height = height;
+        this.boxesRelationship = this.getBoxesRelationship(this.mainShape);
+    }
 }
 
 const getBoxYPosition = (times = 1, subBy: number = 0): number => {
@@ -115,95 +152,19 @@ const getBoxYPosition = (times = 1, subBy: number = 0): number => {
     // return boardHeight - 60; //(boxWidth - subBy) * times;
 };
 
-const L3x3 = `🟥⬜⬜
-              🟥⬜⬜
-              🟥🟥🟥`;
-
-const L2x2 = `🟥⬜
-              🟥🟥`;
-
-const J2x2 = `⬜🟥
-              🟥🟥`;
-
-const T3x3 = `🟥🟥🟥
-              ⬜🟥⬜`;
-
-const I3 = `🟥
-            🟥
-            🟥`;
-
-const I2 = `🟥
-            🟥`;
-
-const I4 = `🟥
-            🟥
-            🟥
-            🟥`;
-
-const dot = "🟥";
-
-const box2x2 = `🟥🟥
-                🟥🟥`;
-
-const box3x3 = `🟥🟥🟥
-                🟥🟥🟥
-                🟥🟥🟥`;
-
-const line3 = "🟥🟥🟥";
-
-const line4 = "🟥🟥🟥🟥";
-
-const Z3x3 = `🟥🟥⬜
-              ⬜🟥🟥`;
-
-const Z2x2 = `🟥🟥
-              ⬜🟥`;
-
-const S3x3 = `⬜🟥🟥
-              🟥🟥⬜`;
-
-const S2x2 = `⬜🟥
-              🟥🟥`;
-
-const U2x2 = `🟥⬜
-              🟥🟥`;
-
-const Corner3 = `🟥🟥
-                 🟥⬜`;
-
-const Corner4 = `🟥🟥🟥
-                 🟥⬜⬜`;
-
-const SmallL = `🟥⬜
-                🟥🟥`;
-
-const SmallJ = `⬜🟥
-                🟥🟥`;
-
-const SmallT = `🟥🟥🟥
-                ⬜🟥⬜`;
-
-const SmallS = `⬜🟥🟥
-                🟥🟥⬜`;
-
-const SmallZ = `🟥🟥⬜
-                ⬜🟥🟥`;
-
-const TwoBlock = "🟥🟥";
-
 const generateShape = (shape: string) => {
     let x = 0;
     let y = 2;
     const mainShape = [];
     const idleShape = [];
-    let width = boxWidth;
-    let heigth = 0;
+
+    let height = 0;
     for (const box of shape) {
         if (box === "\n") {
             y++;
         }
     }
-    heigth = y * boxHeight;
+    height = y * boxHeight;
     for (const box of shape) {
         if (box === "🟥") {
             mainShape.push({
@@ -224,73 +185,60 @@ const generateShape = (shape: string) => {
         }
         if (box === "\n") {
             y--;
-            if (x * boxWidth > width) width = x * boxWidth;
             x = 0;
         }
     }
     return {
         shape: mainShape,
         idleShape,
-        width,
-        heigth: heigth - boxHeight,
+
+        height: height - boxHeight,
     };
 };
 
 export const populateShapes = (): Shape[] => {
-    const allShapes = [
-        dot,
-        line4,
-        line3,
-
-        box2x2,
-        box3x3,
-        L3x3,
-        L2x2,
-
-        J2x2,
-        T3x3,
-        I3,
-        I2,
-        I4,
-        Z3x3,
-        Z2x2,
-        S3x3,
-        S2x2,
-
-        U2x2,
-
-        Corner3,
-        Corner4,
-        SmallL,
-        SmallJ,
-        SmallT,
-        SmallS,
-        SmallZ,
-        TwoBlock,
-    ]; //[two, twoT, twoTw];;
     const allColors = [matchedColor, "red", "yellow", "green", "purple"];
     const shapes: Shape[] = [];
     for (let i = 0; i < 3; i++) {
         const pickedShape =
-            allShapes[Math.floor(Math.random() * allShapes.length)];
+            shapesRotations[Math.floor(Math.random() * shapesRotations.length)];
 
         const color = allColors[Math.floor(Math.random() * allColors.length)];
 
-        // Adjust each idle shape's x position
-        const { shape, idleShape, width, heigth } = generateShape(pickedShape);
-        const adjustedShape = idleShape.map((box) => ({
-            ...box,
-            x: box.x + i * (boardWidth / 3) + boardWidth / 10 + 5,
-        }));
+        const rotationsMain = [];
+        const rotationsIdle = [];
+        for (const shape of pickedShape.rotations) {
+            const {
+                shape: rotation,
+                idleShape,
 
+                height,
+            } = generateShape(shape);
+
+            const adjustedRotation = idleShape.map((box) => ({
+                ...box,
+                x: box.x + i * (boardWidth / 3) + boardWidth / 10 + 5,
+            }));
+
+            rotationsIdle.push({ shapes: adjustedRotation, height });
+            rotationsMain.push({ shapes: rotation, height });
+        }
+        // Adjust each idle shape's x position
+        const shapeToPickIndex = Math.floor(
+            Math.random() * rotationsMain.length
+        );
         const shapeIns = new Shape(
-            shape,
-            adjustedShape,
+            rotationsMain,
+            rotationsIdle,
+            rotationsMain[shapeToPickIndex].shapes,
+            rotationsIdle[shapeToPickIndex].shapes,
             i,
-            width,
-            heigth,
+            shapeToPickIndex,
+            rotationsMain[shapeToPickIndex].height,
             color
         );
+        console.log({ shapeIns });
+
         shapes.push(shapeIns);
     }
     return shapes;
