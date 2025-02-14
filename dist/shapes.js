@@ -114,8 +114,9 @@ export class Shape {
             return shape.map(({ x, y }) => {
                 const translatedX = x - pivotX;
                 const translatedY = y - pivotY;
-                const rotatedX = translatedY + pivotX;
-                const rotatedY = -translatedX + pivotY;
+                // Adjust the rotation to be clockwise
+                const rotatedX = -translatedY + pivotX; // Change here for clockwise
+                const rotatedY = translatedX + pivotY; // Change here for clockwise
                 return {
                     x: Math.round(rotatedX),
                     y: Math.round(rotatedY),
