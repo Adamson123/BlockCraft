@@ -55,6 +55,7 @@ export const drawShape = (shape?: Shape) => {
         // drawWoodBlock(box.x, box.y, box.width, box.height);
     }
     resetShadowValues();
+    shape.drawSpinningIcon();
 };
 
 export const drawAllShapes = (shapes: Shape[]) => {
@@ -72,8 +73,13 @@ export const drawShapesSpaceBorder = () => {
     ctx.strokeStyle = defaultStrokeColor;
     ctx.fillStyle = defaultColor;
     ctx.lineWidth = strokeWidth;
-    ctx.strokeRect(start, boardWidth, boardWidth - 12, 105);
-    ctx.fillRect(start, boardWidth, boardWidth - 12, 105);
+    ctx.strokeRect(
+        start,
+        boardWidth,
+        boardWidth - 12,
+        boardHeight - boardWidth
+    );
+    ctx.fillRect(start, boardWidth, boardWidth - 12, boardHeight - boardWidth);
 };
 
 // export const drawRemark = (draw: () => void) => {

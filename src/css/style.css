@@ -1,21 +1,25 @@
 :root {
     --var-orange-color: rgb(252, 119, 71);
     --var-red-color: rgb(250, 57, 57);
+    --var-transparent-black: rgba(0, 0, 0, 0.7);
 }
 @font-face {
     font-family: boldFont;
     src: url("../assets/fonts/CANegroni-Black.woff2");
 }
-
+@font-face {
+    font-family: lightFont;
+    src: url("../assets/fonts/CANegroni-Light.woff2");
+}
 html {
-    font-family: boldFont, Arial, Helvetica, sans-serif;
+    font-family: lightFont, Arial, Helvetica, sans-serif;
     color: white;
     background: url("../assets/images/cloud.png");
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
     height: 100vh;
-    /* overflow: hidden; */
+    overflow-y: hidden;
     padding-top: 5px;
 }
 
@@ -44,7 +48,7 @@ header div {
 .highestScoreContainer,
 .scoreContainer {
     padding: 5px 15px;
-    background: rgba(0, 0, 0, 0.7);
+    background: var(--var-transparent-black);
     border-radius: 5px;
     border: 1px solid black;
 }
@@ -68,7 +72,7 @@ header div {
     rotate: -10deg;
 }
 
-button {
+.generalButton button {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -97,9 +101,78 @@ button {
         display: none;
     }
 }
-.game {
+.game div:first-child {
     position: relative;
 }
+.game {
+    display: flex;
+    justify-content: center;
+}
+
+.specialItems {
+    padding-top: 10px;
+    gap: calc((40px * 10 / 3) - 50px);
+    display: flex;
+    flex-direction: column;
+}
+.specialItems div {
+    background-color: var(--var-transparent-black);
+    display: flex;
+    align-items: center;
+    padding: 7px 5px;
+    border-radius: 25px;
+    gap: 7px;
+    flex-direction: column;
+    font-weight: bold;
+    /* border: 1px solid black; */
+}
+
+.specialItems div span {
+    font-size: 17px;
+}
+.specialItems button {
+    /* background: linear-gradient(
+        rgb(170, 79, 5),
+        rgb(207, 157, 19),
+        rgb(170, 79, 5)
+    ); */
+    border: none;
+    background-color: var(--var-transparent-black);
+    padding: 0px;
+    min-height: 27px;
+    min-width: 27px;
+    max-height: 27px;
+    max-width: 27px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+.specialItems button img {
+    width: 25px;
+    height: 25px;
+}
+
+.specialItems button:first-child img {
+    transform: translateY(2px);
+}
+
+@media (min-height: 620px) {
+    .game {
+        flex-direction: column;
+        align-items: center;
+    }
+    .specialItems {
+        flex-direction: row;
+        /* transform: translateY(-20px); */
+        gap: calc((40px * 10 / 3) - 70px);
+    }
+    .specialItems div {
+        flex-direction: row;
+        padding: 7px 10px;
+    }
+}
+
 .remarkContainer {
     position: absolute;
     top: 40%;

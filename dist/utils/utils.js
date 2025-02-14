@@ -20,7 +20,7 @@ export const getMousePosition = (event) => {
     };
 };
 export const clickedOnBox = (mouseX, mouseY, obj) => {
-    const insideHorizontally = mouseX >= obj.x && mouseX <= obj.x + boxWidth + 20;
-    const insideVertically = mouseY >= obj.y && mouseY <= obj.y + boxHeight + 20;
+    const insideHorizontally = mouseX >= obj.x && mouseX <= obj.x + boxWidth + 30;
+    const insideVertically = mouseY >= obj.y && mouseY <= obj.y + boxHeight + 30;
     return insideHorizontally && insideVertically;
 };

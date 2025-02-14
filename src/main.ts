@@ -17,8 +17,8 @@ import { updateScore } from "./scoring.js";
 const fullscreenBtn =
     document.querySelector<HTMLButtonElement>(".fullscreenBtn");
 const soundBtn = document.querySelector<HTMLButtonElement>(".soundBtn");
-const rotateShapeBtn =
-    document.querySelector<HTMLButtonElement>(".rotateShapeBtn")!;
+const spinShapeBtn =
+    document.querySelector<HTMLButtonElement>(".spinShapeBtn")!;
 let mousedown = false;
 let rotate = false;
 let currentShape: Shape | undefined;
@@ -27,13 +27,13 @@ let boxes: Box[] = populateBoxes();
 let shapes: Shape[] = populateShapes();
 
 const updateShapePosition = (x: number, y: number) => {
-    if (!currentShape) return;
+    if (!currentShape || rotate) return;
 
     // Calculate differences based on the first box position
     const dx = x - currentShape.boxes[0].x - currentShape.width / 2;
-    const dy = y - currentShape.boxes[0].y - currentShape.height - 15;
+    const dy = y - currentShape.findHeight() - 10;
 
-    console.log(currentShape.width);
+    // const dy = y - currentShape.boxes[0].y - currentShape.height - 15;
 
     currentShape.boxes.forEach((box: BoxShape) => {
         box.x = box.x + dx;
@@ -43,7 +43,7 @@ const updateShapePosition = (x: number, y: number) => {
     draw(shapes, currentShape, boxes);
 };
 
-rotateShapeBtn.addEventListener("click", () => {
+spinShapeBtn.addEventListener("click", () => {
     rotate = rotate ? false : true;
 });
 
@@ -52,6 +52,39 @@ const checkLoseCallback = (box: Box, lastBox: Box) => {
     draw(shapes, currentShape, boxes);
     if (lastBox.index === box.index) toggleGameState();
 };
+
+// const handleShapeSelection = (event: MouseEvent | TouchEvent) => {
+//     mousedown = true;
+//     const { x, y } = getMousePosition(event);
+//     for (const shape of shapes) {
+//         let clicked = false;
+//         for (const box of shape.boxes) {
+//             if (clickedOnBox(x, y, box)) {
+//                 clicked = true;
+//                 break;
+//             }
+//         }
+//         if (clicked) {
+//             currentShape = shape;
+//             !rotate && currentShape.toMainShape();
+//             break;
+//         }
+//     }
+
+//     if (currentShape) {
+//         if (!rotate && currentShape.isAccomodable) {
+//             updateShapePosition(x, y);
+//         } else {
+//             // currentShape.toIdleShape();
+//             if (rotate) {
+//                 currentShape.rotate();
+//                 checkLose(boxes, shapes, checkLoseCallback);
+//             }
+//             draw(shapes, currentShape, boxes);
+//             currentShape = undefined;
+//         }
+//     }
+// };
 
 const handleShapeSelection = (event: MouseEvent | TouchEvent) => {
     mousedown = true;
@@ -66,28 +99,44 @@ const handleShapeSelection = (event: MouseEvent | TouchEvent) => {
         }
         if (clicked) {
             currentShape = shape;
-            !rotate && currentShape.toMainShape();
+            if (!rotate) currentShape.toMainShape();
             break;
         }
     }
 
     if (currentShape) {
-        if (!rotate && currentShape.isAccomodable) {
-            updateShapePosition(x, y);
-        } else {
-            currentShape.toIdleShape();
-            if (rotate) {
-                currentShape.rotate();
-                checkLose(boxes, shapes, checkLoseCallback);
-            }
-            draw(shapes, currentShape, boxes);
-            currentShape = undefined;
+        updateShapePosition(x, y);
+        if (rotate) {
+            currentShape.rotate();
         }
     }
 };
 
+// const handleShapeRotationSelection = (event: MouseEvent) => {
+//     mousedown = true;
+//     const { x, y } = getMousePosition(event);
+//     for (const shape of shapes) {
+//         let clicked = false;
+//         for (const box of shape.boxes) {
+//             if (clickedOnBox(x, y, box)) {
+//                 clicked = true;
+//                 break;
+//             }
+//         }
+//         if (clicked) {
+//             currentShape = shape;
+//             break;
+//         }
+//     }
+
+//     if (currentShape) {
+//         currentShape.rotate();
+//         draw(shapes, currentShape, boxes);
+//     }
+// };
+
 const handleShapeDrag = (event: MouseEvent | TouchEvent) => {
-    if (mousedown && currentShape) {
+    if (mousedown && currentShape && !rotate) {
         const { x, y } = getMousePosition(event);
         updateShapePosition(x, y);
     }
@@ -96,11 +145,6 @@ const handleShapeDrag = (event: MouseEvent | TouchEvent) => {
 const resetBoxesCallback = () => {
     checkLose(boxes, shapes, checkLoseCallback);
     draw(shapes, currentShape, boxes);
-    //  displayRemark();
-    // const cb = () => {
-    //     draw(shapes, currentShape, boxes);
-    // };
-    // drawRemark(cb);
 };
 
 const resetShapePosition = () => {
@@ -109,33 +153,41 @@ const resetShapePosition = () => {
     if (!currentShape) {
         return;
     }
-    // Call the shape's method to reset its position
-    currentShape.toIdleShape();
+    if (!rotate) {
+        // Call the shape's method to reset its position
+        currentShape.toIdleShape();
 
-    let noOccupiedDimension;
-    if (boxesOnHover.boxes.size === currentShape.boxes.length) {
-        boxesOnHover.boxes.forEach((boxNumber) => {
-            boxes[(boxNumber as number) - 1]?.toOccupied(
-                (currentShape as Shape).color
+        let noOccupiedDimension;
+        if (boxesOnHover.boxes.size === currentShape.boxes.length) {
+            boxesOnHover.boxes.forEach((boxNumber) => {
+                boxes[(boxNumber as number) - 1]?.toOccupied(
+                    (currentShape as Shape).color
+                );
+            });
+            noOccupiedDimension = resetBoxesInOccupiedDimensions(
+                boxes,
+                resetBoxesCallback
             );
-        });
-        noOccupiedDimension = resetBoxesInOccupiedDimensions(
-            boxes,
-            resetBoxesCallback
-        );
-        shapes = shapes.filter((shape) => shape.index !== currentShape!.index);
-        playSound("glock");
+            shapes = shapes.filter(
+                (shape) => shape.index !== currentShape!.index
+            );
+            playSound("glock");
+        } else {
+            playSound("woof");
+        }
+        //remove boxes that changed color when shape was dragged over them"
+        boxesOnHover.emptyBoxesOnHover();
+
+        currentShape = undefined;
+        if (!shapes.length) shapes = populateShapes();
+
+        if (!noOccupiedDimension) checkLose(boxes, shapes, checkLoseCallback);
+        draw(shapes, currentShape, boxes);
     } else {
-        playSound("woof");
+        playSound("click");
+        draw(shapes, currentShape, boxes);
+        currentShape = undefined;
     }
-    //"remove boxes that changed color when shape was dragged over them"
-    boxesOnHover.emptyBoxesOnHover();
-
-    currentShape = undefined;
-    if (!shapes.length) shapes = populateShapes();
-
-    if (!noOccupiedDimension) checkLose(boxes, shapes, checkLoseCallback);
-    draw(shapes, currentShape, boxes);
 };
 
 draw(shapes, currentShape, boxes);
@@ -168,11 +220,17 @@ document
         draw(shapes, currentShape, boxes);
     });
 
-//mouse events
-board.addEventListener("mousemove", handleShapeDrag);
-board.addEventListener("mousedown", handleShapeSelection);
-board.addEventListener("mouseup", resetShapePosition);
-board.addEventListener("mouseout", resetShapePosition);
+const isTouchscreen = window.matchMedia("(pointer:coarse)").matches;
+
+console.log({ isTouchscreen });
+
+if (!isTouchscreen) {
+    //mouse events
+    board.addEventListener("mousemove", handleShapeDrag);
+    board.addEventListener("mousedown", handleShapeSelection);
+    board.addEventListener("mouseup", resetShapePosition);
+    board.addEventListener("mouseout", resetShapePosition);
+}
 
 //touch events
 board.addEventListener("touchmove", handleShapeDrag);

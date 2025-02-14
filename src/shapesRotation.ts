@@ -1,3 +1,4 @@
+//! Useless at the moment
 export const shapesRotations = [
     {
         name: "L3x3",

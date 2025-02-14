@@ -20,7 +20,7 @@
                 </div>
             </div>
 
-            <div class="menuButtons">
+            <div class="menuButtons generalButton">
                 <!-- Screen -->
                 <button class="fullscreenBtn">
                     <img
@@ -41,21 +41,42 @@
 
         <!-- <img src="../src/assets/smoke.png" class="smoke" /> -->
         <div class="game">
-            <canvas class="board"></canvas>
+            <div>
+                <canvas class="board"></canvas>
 
-            <!-- Remark -->
-            <div class="remarkContainer">
-                <h3 class="remark">GOOD JOB!</h3>
-                <p class="points">200+</p>
+                <!-- Remark -->
+                <div class="remarkContainer">
+                    <h3 class="remark">GOOD JOB!</h3>
+                    <p class="points">200+</p>
+                </div>
             </div>
-        </div>
-        <!-- Special Items -->
-        <div class="specialItems">
-            <button class="rotateShapeBtn">🔄</button>
+            <!-- Special Items -->
+            <div class="specialItems">
+                <div>
+                    <button class="spinShapeBtn">
+                        <img src="./src/assets/images/spin-2.svg" alt="spin" />
+                    </button>
+                    <span> &times; 1</span>
+                </div>
+
+                <div>
+                    <button class="resetShapesBtn">
+                        <img src="./src/assets/images/spin-2.svg" alt="spin" />
+                    </button>
+                    <span> &times; 2</span>
+                </div>
+
+                <div>
+                    <button class="bombBtn">
+                        <img src="./src/assets/images/spin-2.svg" alt="spin" />
+                    </button>
+                    <span> &times; 3</span>
+                </div>
+            </div>
         </div>
 
         <!-- PAUSE / GAMEOVER -->
-        <div class="pauseContainer">
+        <div class="pauseContainer generalButton">
             <div class="pause">
                 <h3 class="gameState">PAUSE</h3>
                 <div class="gameScoreContainer">
@@ -76,6 +97,10 @@
                     </button>
                 </div>
             </div>
+        </div>
+        <!-- Images that need to be loaded before they are used -->
+        <div style="display: none">
+            <img src="./src/assets/images/spin-3.svg" />
         </div>
         <!-- <div class="audios">
             <audio src="./src/assets/audios/whoosh.mp3" class="whoosh"></audio>

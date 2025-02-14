@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" version="1.1" style="shape-rendering:geometricPrecision;text-rendering:geometricPrecision;image-rendering:optimizeQuality;" viewBox="0 0 100000 125000" x="0px" y="0px" fill-rule="evenodd" clip-rule="evenodd">
+  <defs>
+    <style type="text/css">
+   
+    .fil0 {fill:yellow}
+   
+    </style>
+  </defs>
+  <g>
+    <path class="fil0" d="M61926 14224l-11926 -11926 0 5964c-23013,0 -41739,18725 -41739,41739 0,11168 4356,21663 12274,29558l8407 -8443c-5635,-5638 -8757,-13138 -8757,-21115 0,-16444 13369,-29813 29814,-29813l0 5963 11926 -11926 1 -1z"/>
+    <path class="fil0" d="M79465 20443l-8407 8442c5635,5638 8757,13137 8757,21115 0,16445 -13369,29814 -29814,29814l0 -5964 -11926 11926 11926 11924 0 -5963c23013,0 41739,-18725 41739,-41739 0,-11168 -4355,-21663 -12274,-29558l-1 3z"/>
+  </g>
+  <text x="0" y="100015" fill="#000000" font-size="5px" font-weight="bold" font-family="'Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif">Created by Fita</text>
+  <text x="0" y="100020" fill="#000000" font-size="5px" font-weight="bold" font-family="'Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif">from the Noun Project</text>
+</svg>

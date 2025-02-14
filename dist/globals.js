@@ -4,10 +4,10 @@ export const boxWidth = size;
 export const board = document.querySelector(".board");
 export const ctx = board.getContext("2d");
 export let boardWidth = boxWidth * 10 + 10;
-export let boardHeight = boxWidth * 13 + 25; //* 14; //+ 25;
+export let boardHeight = boxWidth * 13 + 20; //* 14; //+ 25;
 board.width = boardWidth;
 board.height = boardHeight;
-export const idle = 23;
+export const idle = 21;
 export const boxesOnHover = {
     boxes: new Set(),
     emptyBoxesOnHover() {
