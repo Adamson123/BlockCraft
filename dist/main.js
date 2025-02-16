@@ -14,13 +14,13 @@ const spinShapeItem = document.querySelector(".spinShapeItem");
 const resetShapesItem = document.querySelector(".resetShapesItem");
 const bombItem = document.querySelector(".bombItem");
 let mousedown = false;
-let spin = false;
+let spinMode = false;
 //let bomb.bombMode = false;
 let currentShape;
 let boxes = populateBoxes();
 let shapes = populateShapes();
 const updateShapePosition = (x, y) => {
-    if (!currentShape || spin)
+    if (!currentShape || spinMode)
         return;
     // Calculate differences based on the first box position
     const dx = x - currentShape.boxes[0].x - currentShape.width / 2;
@@ -44,14 +44,14 @@ const handleShapeSelection = (event) => {
         }
         if (clicked) {
             currentShape = shape;
-            if (!spin)
+            if (!spinMode)
                 currentShape.toMainShape();
             break;
         }
     }
     if (currentShape) {
         updateShapePosition(x, y);
-        if (spin) {
+        if (spinMode) {
             currentShape.spin();
             checkLose(boxes, shapes, checkLoseCallback);
         }
@@ -85,7 +85,7 @@ const handleMouseDown = (event) => {
 };
 const handleMouseMovement = (event) => {
     const { x, y } = getMousePosition(event);
-    if (mousedown && currentShape && !spin) {
+    if (mousedown && currentShape && !spinMode) {
         updateShapePosition(x, y);
     }
     if (mousedown && bomb.bombMode && bomb.bombSelected) {
@@ -104,7 +104,7 @@ const resetBoxesCallback = () => {
 };
 const handleMouseOut = () => {
     mousedown = false;
-    if (!spin && !bomb.bombMode) {
+    if (!spinMode && !bomb.bombMode) {
         if (!currentShape) {
             return;
         }
@@ -148,33 +148,38 @@ const handleMouseOut = () => {
             }
             bomb.resetBomb();
         }
-        draw(shapes, currentShape, boxes, spin);
+        draw(shapes, currentShape, boxes, spinMode);
         currentShape = undefined;
     }
 };
 draw(shapes, currentShape, boxes);
 updateSpecialItemsCountDisplay();
 spinShapeItem.addEventListener("click", () => {
-    if (specialtems.spin || spin) {
+    //we have spin left? enter!
+    //we are out of spin but we are in spinMode? enter!
+    //we are out of spin and not in spinMode? Don't enter!!!
+    if (specialtems.spin || spinMode) {
         //if we are trying tobv
-        if (spin) {
+        if (spinMode) {
             const rotatedShape = shapes.find((shape) => !shape.isInDefaultShape());
-            if (!rotatedShape) {
+            if (rotatedShape) {
+                console.log(rotatedShape.boxesChange, rotatedShape.defaultBoxesChange, rotatedShape.isInDefaultShape());
+                shapes.forEach((shape) => {
+                    shape.updateDefaultChange();
+                });
+            }
+            else {
                 specialtems.spin++;
             }
-            shapes.forEach((shape) => {
-                shape.updateDefaultBoxesRelationship();
-            });
             //if no shape was rotated increase the score back
         }
-        spin = spin ? false : true;
-        if (spin) {
+        spinMode = spinMode ? false : true;
+        if (spinMode) {
             specialtems.spin--;
         }
-        console.log({ spin });
         updateSpecialItemsCountDisplay();
-        draw(shapes, currentShape, boxes, spin);
-        spinShapeItem.style.border = spin
+        draw(shapes, currentShape, boxes, spinMode);
+        spinShapeItem.style.border = spinMode
             ? "2px solid yellow"
             : "2px solid transparent";
     }
@@ -185,7 +190,7 @@ resetShapesItem.addEventListener("click", () => {
         specialtems.resetShapes--;
         updateSpecialItemsCountDisplay();
         shapes = populateShapes();
-        draw(shapes, currentShape, boxes, spin);
+        draw(shapes, currentShape, boxes, spinMode);
     }
     playSound("click");
 });
@@ -195,7 +200,7 @@ bombItem.addEventListener("click", () => {
     bombItem.style.border = bomb.bombMode
         ? "2px solid rgb(221,72,68)"
         : "2px solid transparent";
-    draw(shapes, currentShape, boxes, spin);
+    draw(shapes, currentShape, boxes, spinMode);
     playSound("click");
 });
 fullscreenBtn?.addEventListener("click", () => {
