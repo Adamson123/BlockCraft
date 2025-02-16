@@ -8,7 +8,15 @@ const remarkContainer =
 const points = document.querySelector(".points")!;
 const remark = document.querySelector(".remark")!;
 
-export const updateScore = (reset: boolean = false) => {
+export const updateScore = (
+    comboPoints: number,
+    points: number,
+    dimensionColorMatchedCount: number,
+    reset: boolean = false
+) => {
+    gameScore.score += comboPoints > 0 ? comboPoints + points : points;
+    gameScore.score += dimensionColorMatchedCount;
+
     if (gameScore.score <= 0 && !reset) {
         return;
     }

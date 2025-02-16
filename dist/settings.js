@@ -73,6 +73,7 @@ const amazing = getSound("amazing");
 const incredible = getSound("incredible");
 const click = getSound("click");
 const woof = getSound("woof");
+const bomb = getSound("bomb");
 // amazing.load();
 // glock.load();
 // whoosh.load();
@@ -107,6 +108,8 @@ export const playSound = (sound = "click") => {
         case "woof":
             woof.play();
             break;
+        case "bomb":
+            bomb.play();
         default:
             click.play();
             break;

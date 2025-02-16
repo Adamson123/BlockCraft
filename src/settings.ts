@@ -11,7 +11,7 @@ const getIcon = (name: string, alt: string) => {
 
 let fullscreen = false;
 export const toggleFullscreen = (fullscreenBtn: HTMLButtonElement) => {
-   playSound()
+    playSound();
     if (!fullscreen) {
         const elem = document.documentElement as HTMLElement & {
             mozRequestFullScreen?: () => Promise<void>;
@@ -55,12 +55,11 @@ export const toggleFullscreen = (fullscreenBtn: HTMLButtonElement) => {
         fullscreenBtn.innerHTML = getIcon("fullscreen", "screen");
         fullscreen = false;
     }
-
 };
 
 let soundOn = true;
 export const toggleSoundMode = (soundBtn: HTMLButtonElement) => {
-   playSound()
+    playSound();
     if (soundOn) {
         soundBtn.innerHTML = getIcon("volume_off", "sound");
         soundOn = false;
@@ -82,6 +81,7 @@ const amazing = getSound("amazing");
 const incredible = getSound("incredible");
 const click = getSound("click");
 const woof = getSound("woof");
+const bomb = getSound("bomb");
 
 // amazing.load();
 // glock.load();
@@ -100,7 +100,8 @@ export const playSound = (
         | "incredible"
         | "good-job"
         | "click"
-        | "woof" = "click"
+        | "woof"
+        | "bomb" = "click"
 ) => {
     if (!soundOn) return;
     switch (sound) {
@@ -128,6 +129,8 @@ export const playSound = (
         case "woof":
             woof.play();
             break;
+        case "bomb":
+            bomb.play();
         default:
             click.play();
             break;

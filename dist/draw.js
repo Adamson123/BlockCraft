@@ -55,7 +55,6 @@ crosshairSvg.src = "./src/assets/images/crosshair.svg";
 export const drawBomb = () => {
     bomb.bombImageSize = 80;
     if (bomb.bombSelected) {
-        // ctx.strokeStyle = "yellow";
         bomb.bombImageSize = 30;
         ctx.drawImage(crosshairSvg, bomb.x, bomb.y, bomb.cursorImageSize, bomb.size);
     }

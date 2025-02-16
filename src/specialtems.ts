@@ -1,5 +1,9 @@
 import { boardWidth, boxWidth } from "./globals.js";
 
+const bombCount = document.querySelector(".bombCount")!;
+const spinCount = document.querySelector(".spinCount")!;
+const resetShapesCount = document.querySelector(".resetShapesCount")!;
+
 const times = 3;
 export const bomb = {
     x: (boardWidth - boxWidth * times) / 2,
@@ -33,4 +37,10 @@ export const specialtems = {
     spin: 2,
     resetShapes: 3,
     bomb: 2,
+};
+
+export const updateSpecialItemsCountDisplay = () => {
+    bombCount.textContent = String(specialtems.bomb);
+    spinCount.textContent = String(specialtems.spin);
+    resetShapesCount.textContent = String(specialtems.resetShapes);
 };

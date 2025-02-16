@@ -24,6 +24,7 @@ export class Shape {
     strokeColor: string;
     index: number;
     boxesRelationship: BoxesRelationship[];
+    defaultBoxesRelationship: BoxesRelationship[];
     isAccomodable: boolean;
 
     /**
@@ -51,6 +52,7 @@ export class Shape {
         this.strokeColor = matchedStrokeColor;
         this.index = index;
         this.boxesRelationship = this.getBoxesRelationship(shape);
+        this.defaultBoxesRelationship = this.getBoxesRelationship(shape);
         this.isAccomodable = true;
     }
 
@@ -76,6 +78,7 @@ export class Shape {
     toMainShape() {
         this.boxes = structuredClone(this.mainShape);
     }
+
     getBoxesRelationship(shape: BoxShape[]) {
         const firstBox: any = structuredClone(shape[0]);
         const boxesRelationship: {
@@ -117,6 +120,15 @@ export class Shape {
 
         return boxesRelationship;
     }
+    isInDefaultShape() {
+        return (
+            JSON.stringify(this.boxesRelationship) ===
+            JSON.stringify(this.defaultBoxesRelationship)
+        );
+    }
+    updateDefaultBoxesRelationship() {
+        this.defaultBoxesRelationship = this.boxesRelationship;
+    }
     toNotAccomodable() {
         this.isAccomodable = false;
         this.color = hoverColor;
@@ -146,8 +158,8 @@ export class Shape {
                 const translatedY = y - pivotY;
 
                 // Adjust the rotation to be clockwise
-                const rotatedX = -translatedY + pivotX; // Change here for clockwise
-                const rotatedY = translatedX + pivotY; // Change here for clockwise
+                const rotatedX = -translatedY + pivotX;
+                const rotatedY = translatedX + pivotY;
 
                 return {
                     x: Math.round(rotatedX),
@@ -170,7 +182,17 @@ export class Shape {
         const pivotX = this.findPivotX(this.idleShape);
         const pivotY = this.findPivotY(this.idleShape);
 
-        ctx.drawImage(spinSvg, pivotX - 6, pivotY - 2, 25, 25);
+        ctx.drawImage(spinSvg, pivotX - 6, pivotY - 2, 25, 30);
+        // ctx.save();
+        // const pivotX = this.findPivotX(this.idleShape);
+        // const pivotY = this.findPivotY(this.idleShape);
+        // const animate = () => {
+        //     ctx.translate(pivotX, pivotY);
+        //     ctx.rotate((20 * Math.PI) / 180);
+        //     ctx.drawImage(spinSvg, -12, -5, 25, 30);
+        //     ctx.restore();
+        // };
+        // animate();
     }
 }
 

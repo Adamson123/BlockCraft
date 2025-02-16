@@ -5,7 +5,9 @@ const scoreText = document.querySelector(".score");
 const remarkContainer = document.querySelector(".remarkContainer");
 const points = document.querySelector(".points");
 const remark = document.querySelector(".remark");
-export const updateScore = (reset = false) => {
+export const updateScore = (comboPoints, points, dimensionColorMatchedCount, reset = false) => {
+    gameScore.score += comboPoints > 0 ? comboPoints + points : points;
+    gameScore.score += dimensionColorMatchedCount;
     if (gameScore.score <= 0 && !reset) {
         return;
     }

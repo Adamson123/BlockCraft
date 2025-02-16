@@ -2,11 +2,9 @@ import Box from "./box/box.js";
 import {
     boardHeight,
     boardWidth,
-    boxHeight,
     ctx,
     defaultColor,
     defaultStrokeColor,
-    matchedColor,
     start,
     strokeWidth,
 } from "./globals.js";
@@ -76,7 +74,6 @@ crosshairSvg.src = "./src/assets/images/crosshair.svg";
 export const drawBomb = () => {
     bomb.bombImageSize = 80;
     if (bomb.bombSelected) {
-        // ctx.strokeStyle = "yellow";
         bomb.bombImageSize = 30;
         ctx.drawImage(
             crosshairSvg,

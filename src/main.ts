@@ -7,7 +7,11 @@ import { playSound, toggleFullscreen, toggleSoundMode } from "./settings.js";
 import { checkLose, toggleGameState } from "./gameState.js";
 import { resetBoxesInOccupiedDimensions } from "./box/boxesHandler.js";
 import { updateScore } from "./scoring.js";
-import { bomb } from "./specialtems.js";
+import {
+    bomb,
+    specialtems,
+    updateSpecialItemsCountDisplay,
+} from "./specialtems.js";
 
 const fullscreenBtn =
     document.querySelector<HTMLButtonElement>(".fullscreenBtn");
@@ -159,12 +163,14 @@ const handleMouseOut = () => {
                     (boxIndex) => boxes[boxIndex - 1].isOccupied
                 );
                 const lastBox = boxesToBomb[boxesToBomb.length - 1];
+                playSound("bomb");
                 boxesToBomb.forEach((boxIndex) => {
                     boxes[boxIndex - 1].animate(
                         resetBoxesCallback,
                         lastBox === boxIndex
                     );
                 });
+                updateScore(0, boxesToBomb.length * 50, 0);
                 bomb.bombMode = false;
                 bombItem.style.border = "2px solid transparent";
             }
@@ -177,19 +183,48 @@ const handleMouseOut = () => {
 };
 
 draw(shapes, currentShape, boxes);
+updateSpecialItemsCountDisplay();
 
 spinShapeItem.addEventListener("click", () => {
-    spin = spin ? false : true;
-    draw(shapes, currentShape, boxes, spin);
-    spinShapeItem.style.border = spin
-        ? "2px solid yellow"
-        : "2px solid transparent";
+    if (specialtems.spin || spin) {
+        //if we are trying tobv
+        if (spin) {
+            const rotatedShape = shapes.find(
+                (shape) => !shape.isInDefaultShape()
+            );
+            if (!rotatedShape) {
+                specialtems.spin++;
+            }
+
+            shapes.forEach((shape) => {
+                shape.updateDefaultBoxesRelationship();
+            });
+
+            //if no shape was rotated increase the score back
+        }
+        spin = spin ? false : true;
+
+        if (spin) {
+            specialtems.spin--;
+        }
+        console.log({ spin });
+
+        updateSpecialItemsCountDisplay();
+        draw(shapes, currentShape, boxes, spin);
+        spinShapeItem.style.border = spin
+            ? "2px solid yellow"
+            : "2px solid transparent";
+    }
     playSound("click");
 });
 
 resetShapesItem.addEventListener("click", () => {
-    shapes = populateShapes();
-    draw(shapes, currentShape, boxes, spin);
+    if (specialtems.resetShapes) {
+        specialtems.resetShapes--;
+        updateSpecialItemsCountDisplay();
+        shapes = populateShapes();
+        draw(shapes, currentShape, boxes, spin);
+    }
     playSound("click");
 });
 
@@ -227,7 +262,7 @@ document
         gameScore.surpassedHighScore = false;
         boxes = populateBoxes();
         shapes = populateShapes();
-        updateScore(true);
+        updateScore(0, 0, 0, true);
         toggleGameState();
         draw(shapes, currentShape, boxes);
     });

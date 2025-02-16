@@ -37,7 +37,7 @@ export const resetBoxesInOccupiedDimensions = (
     });
 
     let points = 0;
-    let comboCount = -1;
+    let comboPoints = -1;
     let occupiedDimensionsCount = 0;
     let dimensionColorMatchedCount = 0;
     Object.keys(occupiedBoxes).forEach((boxes) => {
@@ -50,7 +50,7 @@ export const resetBoxesInOccupiedDimensions = (
 
     if (occupiedDimensionsCount) {
         const boxAnimationCallback = () => {
-            displayRemark(comboCount, dimensionColorMatchedCount);
+            displayRemark(comboPoints, dimensionColorMatchedCount);
             callback();
         };
         Object.keys(occupiedBoxes).forEach((boxes) => {
@@ -58,7 +58,7 @@ export const resetBoxesInOccupiedDimensions = (
             if (ocBoxes.length >= 10) {
                 occupiedDimensionsCount--;
                 points += 100;
-                comboCount++;
+                comboPoints++;
                 let firstColor = ocBoxes[0].color;
                 let dimensionColorMatched = true;
                 playSound("whoosh");
@@ -80,11 +80,9 @@ export const resetBoxesInOccupiedDimensions = (
         });
     }
 
-    comboCount *= 50;
+    comboPoints *= 50;
     dimensionColorMatchedCount *= 100;
-    gameScore.score += comboCount > 0 ? comboCount + points : points;
-    gameScore.score += dimensionColorMatchedCount;
-    updateScore();
+    updateScore(comboPoints, points, dimensionColorMatchedCount);
 
     return noOccupiedDimension; //occupiedBoxes;
 };

@@ -13,6 +13,7 @@ export class Shape {
     strokeColor;
     index;
     boxesRelationship;
+    defaultBoxesRelationship;
     isAccomodable;
     /**
      * @param shape
@@ -34,6 +35,7 @@ export class Shape {
         this.strokeColor = matchedStrokeColor;
         this.index = index;
         this.boxesRelationship = this.getBoxesRelationship(shape);
+        this.defaultBoxesRelationship = this.getBoxesRelationship(shape);
         this.isAccomodable = true;
     }
     findWidth() {
@@ -84,6 +86,13 @@ export class Shape {
         });
         return boxesRelationship;
     }
+    isInDefaultShape() {
+        return (JSON.stringify(this.boxesRelationship) ===
+            JSON.stringify(this.defaultBoxesRelationship));
+    }
+    updateDefaultBoxesRelationship() {
+        this.defaultBoxesRelationship = this.boxesRelationship;
+    }
     toNotAccomodable() {
         this.isAccomodable = false;
         this.color = hoverColor;
@@ -107,8 +116,8 @@ export class Shape {
                 const translatedX = x - pivotX;
                 const translatedY = y - pivotY;
                 // Adjust the rotation to be clockwise
-                const rotatedX = -translatedY + pivotX; // Change here for clockwise
-                const rotatedY = translatedX + pivotY; // Change here for clockwise
+                const rotatedX = -translatedY + pivotX;
+                const rotatedY = translatedX + pivotY;
                 return {
                     x: Math.round(rotatedX),
                     y: Math.round(rotatedY),
@@ -128,7 +137,17 @@ export class Shape {
     drawSpinningIcon() {
         const pivotX = this.findPivotX(this.idleShape);
         const pivotY = this.findPivotY(this.idleShape);
-        ctx.drawImage(spinSvg, pivotX - 6, pivotY - 2, 25, 25);
+        ctx.drawImage(spinSvg, pivotX - 6, pivotY - 2, 25, 30);
+        // ctx.save();
+        // const pivotX = this.findPivotX(this.idleShape);
+        // const pivotY = this.findPivotY(this.idleShape);
+        // const animate = () => {
+        //     ctx.translate(pivotX, pivotY);
+        //     ctx.rotate((20 * Math.PI) / 180);
+        //     ctx.drawImage(spinSvg, -12, -5, 25, 30);
+        //     ctx.restore();
+        // };
+        // animate();
     }
 }
 const getBoxYPosition = (times = 1, subBy = 0) => {

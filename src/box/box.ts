@@ -42,11 +42,12 @@ export default class Box {
             const gapY = box.y - this.y;
             const maxGap = this.width / 2;
 
-            const isHorizontallyAligned =
+            const isHorizontallyColliding =
                 gapX <= maxGap && gapX >= -(maxGap - 1);
-            const isVerticallyAligned = gapY <= maxGap && gapY >= -(maxGap - 1);
+            const isVerticallyColliding =
+                gapY <= maxGap && gapY >= -(maxGap - 1);
 
-            if (isHorizontallyAligned && isVerticallyAligned) {
+            if (isHorizontallyColliding && isVerticallyColliding) {
                 boxesOnHover.boxes.add(this.index);
                 if (boxesOnHover.boxes.size === shape.length) {
                     this.color = hoverColor;
@@ -64,12 +65,12 @@ export default class Box {
 
     bombOver() {
         const maxGap = bomb.x + bomb.size - this.x;
-        const isHorizontallyAligned =
+        const isHorizontallyColliding =
             bomb.x < this.x + this.width && bomb.x + bomb.size >= this.x;
-        const isVerticallyAligned =
+        const isVerticallyColliding =
             bomb.y < this.y + this.height && bomb.y + bomb.size >= this.y;
 
-        if (isHorizontallyAligned && isVerticallyAligned) {
+        if (isHorizontallyColliding && isVerticallyColliding) {
             bomb.boxes.add(this.index);
             ctx.globalAlpha = 0.5;
         } else {
