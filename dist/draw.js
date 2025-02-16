@@ -1,4 +1,5 @@
 import { boardHeight, boardWidth, ctx, defaultColor, defaultStrokeColor, start, strokeWidth, } from "./globals.js";
+import { bomb } from "./specialtems.js";
 export const drawInsetShadow = (box) => {
     ctx.shadowColor = "rgba(0,0,0,0.5)";
     ctx.shadowBlur = 5;
@@ -18,6 +19,8 @@ export const drawBoxes = (boxes, shapeBoxes) => {
     for (const box of boxes) {
         ctx.strokeStyle = box.strokeColor;
         box.shapeOver(shapeBoxes);
+        if (bomb.bombMode)
+            box.bombOver();
         ctx.fillStyle = box.color;
         ctx.strokeRect(box.x, box.y, box.width - 2, box.height - 2);
         ctx.fillRect(box.x, box.y, box.width - 2, box.height - 2);
@@ -27,29 +30,40 @@ export const drawBoxes = (boxes, shapeBoxes) => {
         }
     }
 };
-export const drawShape = (shape) => {
+export const drawShape = (shape, drawSpinIcon = false) => {
     if (!shape)
         return;
     ctx.strokeStyle = shape.strokeColor;
     ctx.lineWidth = strokeWidth;
     ctx.fillStyle = shape.color;
     for (const box of shape.boxes) {
-        //ctx.strokeRect(box.x, box.y, box.width - 2, box.height);
         ctx.fillRect(box.x, box.y, box.width - 2, box.height - 2);
         drawInsetShadow(box);
-        // drawWoodBlock(box.x, box.y, box.width, box.height);
     }
     resetShadowValues();
-    shape.drawSpinningIcon();
+    drawSpinIcon && shape.drawSpinningIcon();
 };
-export const drawAllShapes = (shapes) => {
+export const drawAllShapes = (shapes, drawSpinIcon = false) => {
     for (const shape of shapes) {
-        drawShape(shape);
+        drawShape(shape, drawSpinIcon);
     }
+};
+const bombImg = new Image();
+bombImg.src = "./src/assets/images/Bomb.png";
+const crosshairSvg = new Image();
+crosshairSvg.src = "./src/assets/images/crosshair.svg";
+export const drawBomb = () => {
+    bomb.bombImageSize = 80;
+    if (bomb.bombSelected) {
+        // ctx.strokeStyle = "yellow";
+        bomb.bombImageSize = 30;
+        ctx.drawImage(crosshairSvg, bomb.x, bomb.y, bomb.cursorImageSize, bomb.size);
+    }
+    ctx.drawImage(bombImg, bomb.imageX(), bomb.imageY(), bomb.bombImageSize, bomb.bombImageSize);
+    ctx.globalAlpha = 1;
 };
 export const drawBoxesBoardBorder = () => {
     ctx.fillStyle = defaultStrokeColor;
-    //ctx.lineWidth = strokeWidth;
     ctx.fillRect(0, 0, boardWidth, boardWidth);
 };
 export const drawShapesSpaceBorder = () => {
@@ -59,69 +73,17 @@ export const drawShapesSpaceBorder = () => {
     ctx.strokeRect(start, boardWidth, boardWidth - 12, boardHeight - boardWidth);
     ctx.fillRect(start, boardWidth, boardWidth - 12, boardHeight - boardWidth);
 };
-// export const drawRemark = (draw: () => void) => {
-//     let HfontSize = 1;
-//     let PfontSize = 0;
-//     let InMax = false;
-//     let pause = false;
-//     const animate = () => {
-//         if (!pause)
-//             if (InMax) {
-//                 HfontSize -= 3;
-//             } else {
-//                 HfontSize += 3;
-//             }
-//         //ctx.clearRect(0, 0, boardHeight, boardWidth);
-//         draw();
-//         ctx.font = `${HfontSize}px boldFont`;
-//         ctx.lineWidth = 4;
-//         ctx.strokeStyle = "black";
-//         ctx.fillStyle = "skyblue";
-//         ctx.textAlign = "center";
-//         ctx.textBaseline = "middle";
-//         let text = "Good!";
-//         const position = boardWidth / 2;
-//         ctx.strokeText(text, position, position);
-//         ctx.fillText(text, position, position);
-//         if (!pause)
-//             if (InMax && PfontSize > 0) {
-//                 PfontSize -= 3;
-//             } else if (!InMax && PfontSize < 28) {
-//                 PfontSize += 3;
-//             }
-//         ctx.font = `${PfontSize}px boldFont`;
-//         // console.log({ PfontSize, HfontSize });
-//         ctx.lineWidth = 2;
-//         ctx.strokeStyle = "black";
-//         ctx.fillStyle = matchedColor;
-//         text = "+300";
-//         ctx.strokeText(text, position, position + 30);
-//         ctx.fillText(text, position, position + 30);
-//         if (HfontSize >= 48) {
-//             pause = true;
-//             setTimeout(() => {
-//                 pause = false;
-//                 InMax = true;
-//             }, 1000);
-//         }
-//         if (HfontSize <= 0) return;
-//         requestAnimationFrame(animate);
-//     };
-//     animate();
-// };
 /**
  * @param shapes
  * @param currentShape
  * @param boxes
  * @param clear
  */
-export const draw = (shapes, currentShape, boxes, clear = { x: 0, y: 0 }) => {
-    const { x, y } = clear;
-    ctx.clearRect(x, y, boardWidth, boardHeight);
+export const draw = (shapes, currentShape, boxes, drawSpinIcon = false) => {
+    ctx.clearRect(0, 0, boardWidth, boardHeight);
     drawShapesSpaceBorder();
-    drawAllShapes(shapes);
+    !bomb.bombMode && drawAllShapes(shapes, drawSpinIcon);
     drawBoxes(boxes, currentShape?.boxes);
-    drawShape(currentShape);
-    // resetShadowValues();
-    //drawRemark();
+    !bomb.bombMode && drawShape(currentShape, drawSpinIcon);
+    bomb.bombMode && drawBomb();
 };

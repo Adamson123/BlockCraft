@@ -8,7 +8,7 @@ import {
     idle,
     hoverColor,
     ctx,
-} from "./globals.js";
+} from "../globals.js";
 import { shapesEmoji } from "./shapesEmoji.js";
 
 const spinSvg = new Image();
@@ -63,14 +63,6 @@ export class Shape {
         );
     }
     findHeight() {
-        // return (
-        //     this.mainShape.reduce((acc: number[], { y }) => {
-        //         if (!acc.includes(y)) {
-        //             acc.push(y);
-        //         }
-        //         return acc;
-        //     }, []).length * boxHeight
-        // );
         return (
             this.boxes.reduce(
                 (biggest, { y }) => (biggest = biggest > y ? biggest : y),
@@ -143,8 +135,8 @@ export class Shape {
             shape.reduce((sum, { y }) => sum + y, 0) / shape.length
         );
     }
-    rotate() {
-        const rotateShape = (shape: BoxShape[], idle: number = 0) => {
+    spin() {
+        const spinShape = (shape: BoxShape[], idle: number = 0) => {
             // Calculate the pivot point (center of the shape)
             const pivotX = this.findPivotX(shape);
             const pivotY = this.findPivotY(shape);
@@ -167,8 +159,8 @@ export class Shape {
         };
 
         // Rotate the main shape and idle shape
-        this.mainShape = rotateShape(this.mainShape);
-        this.idleShape = rotateShape(this.boxes, idle);
+        this.mainShape = spinShape(this.mainShape);
+        this.idleShape = spinShape(this.boxes, idle);
         this.boxes = this.idleShape;
         this.width = this.findWidth();
         this.height = this.findHeight();
@@ -178,7 +170,7 @@ export class Shape {
         const pivotX = this.findPivotX(this.idleShape);
         const pivotY = this.findPivotY(this.idleShape);
 
-        ctx.drawImage(spinSvg, pivotX - 7, pivotY - 6, 30, 30);
+        ctx.drawImage(spinSvg, pivotX - 6, pivotY - 2, 25, 25);
     }
 }
 

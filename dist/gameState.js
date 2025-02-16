@@ -1,6 +1,6 @@
 import { gameScore } from "./globals.js";
 import { playSound } from "./settings.js";
-import { findOccupiableBoxes } from "./utils/boxUtils.js";
+import { findOccupiableBoxes } from "./box/boxesHandler.js";
 const pauseContainer = document.querySelector(".pauseContainer");
 const gameState = document.querySelector(".gameState");
 const gameScoreHTML = document.querySelector(".gameScore");

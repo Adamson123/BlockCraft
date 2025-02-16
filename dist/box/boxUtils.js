@@ -1,26 +1,17 @@
-import Box from "../box.js";
 import { boxesOnHover, boxWidth, gameScore } from "../globals.js";
 import { displayRemark, updateScore } from "../scoring.js";
 import { playSound } from "../settings.js";
-
 //: { [key: string]: Box[] }
-export const resetBoxesInOccupiedDimensions = (
-    boxes: Box[],
-
-    callback: () => void
-) => {
-    const hoveredOnAndOccupiedBoxes: Box[] = [];
-
+export const resetBoxesInOccupiedDimensions = (boxes, callback) => {
+    const hoveredOnAndOccupiedBoxes = [];
     boxes.forEach((box) => {
         if (boxesOnHover.boxes.has(box.index) && box.isOccupied) {
             hoveredOnAndOccupiedBoxes.push(box);
         }
     });
-
-    const matchedHorizontally: Box[] = [];
-    const matchedVertically: Box[] = [];
-
-    const occupiedBoxes: { [key: string]: Box[] } = {};
+    const matchedHorizontally = [];
+    const matchedVertically = [];
+    const occupiedBoxes = {};
     hoveredOnAndOccupiedBoxes.forEach((box) => {
         occupiedBoxes[box.x + "x"] = [];
         occupiedBoxes[box.y + "y"] = [];
@@ -35,7 +26,6 @@ export const resetBoxesInOccupiedDimensions = (
             }
         });
     });
-
     let points = 0;
     let comboCount = -1;
     let occupiedDimensionsCount = 0;
@@ -47,7 +37,6 @@ export const resetBoxesInOccupiedDimensions = (
         }
     });
     const noOccupiedDimension = occupiedDimensionsCount;
-
     if (occupiedDimensionsCount) {
         const boxAnimationCallback = () => {
             displayRemark(comboCount, dimensionColorMatchedCount);
@@ -66,10 +55,7 @@ export const resetBoxesInOccupiedDimensions = (
                     if (box.color !== firstColor) {
                         dimensionColorMatched = false;
                     }
-                    box.animate(
-                        boxAnimationCallback,
-                        !occupiedDimensionsCount ? index + 1 : "skip"
-                    ); //toUnOccupied();
+                    box.animate(boxAnimationCallback, !occupiedDimensionsCount ? index + 1 : "skip"); //toUnOccupied();
                 });
                 if (dimensionColorMatched) {
                     dimensionColorMatchedCount++;
@@ -77,63 +63,53 @@ export const resetBoxesInOccupiedDimensions = (
             }
         });
     }
-
     comboCount *= 50;
     dimensionColorMatchedCount *= 100;
     gameScore.score += comboCount > 0 ? comboCount + points : points;
     gameScore.score += dimensionColorMatchedCount;
     updateScore();
-
     return noOccupiedDimension; //occupiedBoxes;
 };
-
-export const findOccupiableBoxes = (
-    boxes: Box[],
-    boxesRelationship: BoxesRelationship[]
-) => {
-    let occupiableBoxes: any[] = [];
-
+export const findOccupiableBoxes = (boxes, boxesRelationship) => {
+    let occupiableBoxes = [];
     const unOccupiedBoxes = boxes.filter((box) => !box.isOccupied);
-    const getCoor = (event: string, dimension: string, times: number) => {
+    const getCoor = (event, dimension, times) => {
         if (event === "increased") {
-            return (
-                occupiableBoxes[occupiableBoxes.length - 1][dimension] +
-                times * boxWidth
-            );
-        } else if (event === "decreased") {
-            return (
-                occupiableBoxes[occupiableBoxes.length - 1][dimension] -
-                times * boxWidth
-            );
-        } else {
+            return (occupiableBoxes[occupiableBoxes.length - 1][dimension] +
+                times * boxWidth);
+        }
+        else if (event === "decreased") {
+            return (occupiableBoxes[occupiableBoxes.length - 1][dimension] -
+                times * boxWidth);
+        }
+        else {
             return occupiableBoxes[occupiableBoxes.length - 1][dimension];
         }
     };
     for (const box of unOccupiedBoxes) {
         occupiableBoxes = [{ x: box.x, y: box.y }];
-
         for (const box2 of boxesRelationship) {
             if (occupiableBoxes.length !== boxesRelationship.length + 1) {
                 const newCoor = {
                     x: getCoor(box2.x.event, "x", box2.x.times),
                     y: getCoor(box2.y.event, "y", box2.y.times),
                 };
-                const isExist = unOccupiedBoxes.find(
-                    (box) => box.x === newCoor.x && box.y === newCoor.y
-                );
+                const isExist = unOccupiedBoxes.find((box) => box.x === newCoor.x && box.y === newCoor.y);
                 if (isExist) {
                     occupiableBoxes.push(newCoor);
-                } else {
+                }
+                else {
                     break;
                 }
-            } else {
+            }
+            else {
                 break;
             }
         }
-
         if (occupiableBoxes.length === boxesRelationship.length + 1) {
             break;
-        } else {
+        }
+        else {
             occupiableBoxes = [];
         }
     }

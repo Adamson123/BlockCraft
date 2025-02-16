@@ -1,4 +1,4 @@
-import { board, boxHeight, boxWidth } from "../globals.js";
+import { board, boxWidth } from "../globals.js";
 export const getMousePosition = (event) => {
     let clientX, clientY;
     if ("touches" in event && event.touches.length > 0) {
@@ -19,8 +19,8 @@ export const getMousePosition = (event) => {
         y: clientY - rect.top,
     };
 };
-export const clickedOnBox = (mouseX, mouseY, obj) => {
-    const insideHorizontally = mouseX >= obj.x && mouseX <= obj.x + boxWidth + 30;
-    const insideVertically = mouseY >= obj.y && mouseY <= obj.y + boxHeight + 30;
+export const clickedItem = (mouseX, mouseY, item, itemSize = boxWidth) => {
+    const insideHorizontally = mouseX >= item.x && mouseX <= item.x + itemSize + 30;
+    const insideVertically = mouseY >= item.y && mouseY <= item.y + itemSize + 30;
     return insideHorizontally && insideVertically;
 };

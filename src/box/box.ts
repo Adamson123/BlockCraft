@@ -1,4 +1,4 @@
-import { drawInsetShadow, resetShadowValues } from "./draw.js";
+import { drawInsetShadow, resetShadowValues } from "../draw.js";
 import {
     boxHeight,
     boxWidth,
@@ -9,7 +9,8 @@ import {
     hoverColor,
     matchedStrokeColor,
     start,
-} from "./globals.js";
+} from "../globals.js";
+import { bomb } from "../specialtems.js";
 
 export default class Box {
     x: number;
@@ -61,7 +62,22 @@ export default class Box {
         }
     }
 
-    // Marks the box as isOccupied and updates its style
+    bombOver() {
+        const maxGap = bomb.x + bomb.size - this.x;
+        const isHorizontallyAligned =
+            bomb.x < this.x + this.width && bomb.x + bomb.size >= this.x;
+        const isVerticallyAligned =
+            bomb.y < this.y + this.height && bomb.y + bomb.size >= this.y;
+
+        if (isHorizontallyAligned && isVerticallyAligned) {
+            bomb.boxes.add(this.index);
+            ctx.globalAlpha = 0.5;
+        } else {
+            bomb.boxes.delete(this.index);
+            ctx.globalAlpha = 1;
+        }
+    }
+
     toOccupied(color: string) {
         this.color = color; //matchedColor;
         this.isOccupied = true;
@@ -72,10 +88,7 @@ export default class Box {
         this.isOccupied = false;
         this.strokeColor = defaultStrokeColor;
     }
-    animate(
-        callback: (...param: any) => void = () => {},
-        index: number | "skip"
-    ) {
+    animate(callback: (...param: any) => void = () => {}, clear: boolean) {
         let width = this.width - 2;
         let height = this.height - 2;
         let currentFrame = 0;
@@ -83,7 +96,7 @@ export default class Box {
             if (width <= 0 || height <= 0) {
                 console.log("Animation stopped at frame:", currentFrame);
                 this.toUnOccupied();
-                if (index === 10) {
+                if (clear) {
                     callback();
                 }
                 return;

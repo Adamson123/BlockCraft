@@ -1,7 +1,7 @@
-import { boxWidth, boardHeight, matchedColor, matchedStrokeColor, boxHeight, boardWidth, idle, hoverColor, ctx, } from "./globals.js";
-import { shapesEmoji } from "./shape/shapesEmoji.js";
+import { boxWidth, boardHeight, matchedColor, matchedStrokeColor, boxHeight, boardWidth, idle, hoverColor, ctx, } from "../globals.js";
+import { shapesEmoji } from "./shapesEmoji.js";
 const spinSvg = new Image();
-spinSvg.src = "./src/assets/images/spin-2.svg";
+spinSvg.src = "./src/assets/images/spin-3.svg";
 export class Shape {
     boxes;
     mainShape;
@@ -40,14 +40,6 @@ export class Shape {
         return (this.mainShape.reduce((sum, { x }) => (sum = x > sum ? x : sum), 0) + boxWidth);
     }
     findHeight() {
-        // return (
-        //     this.mainShape.reduce((acc: number[], { y }) => {
-        //         if (!acc.includes(y)) {
-        //             acc.push(y);
-        //         }
-        //         return acc;
-        //     }, []).length * boxHeight
-        // );
         return (this.boxes.reduce((biggest, { y }) => (biggest = biggest > y ? biggest : y), 0) + boxHeight);
     }
     toIdleShape() {

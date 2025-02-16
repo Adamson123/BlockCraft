@@ -1,9 +1,9 @@
-import Box from "./box.js";
+import Box from "./box/box.js";
 import { gameScore } from "./globals.js";
 
 import { playSound } from "./settings.js";
-import { Shape } from "./shapes.js";
-import { findOccupiableBoxes } from "./utils/boxUtils.js";
+import { Shape } from "./shape/shapes.js";
+import { findOccupiableBoxes } from "./box/boxesHandler.js";
 
 const pauseContainer =
     document.querySelector<HTMLDivElement>(".pauseContainer")!;

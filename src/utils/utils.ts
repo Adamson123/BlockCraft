@@ -1,4 +1,4 @@
-import { board, boxHeight, boxWidth } from "../globals.js";
+import { board, boxWidth } from "../globals.js";
 
 interface MousePos {
     x: number;
@@ -25,14 +25,15 @@ export const getMousePosition = (event: MouseEvent | TouchEvent): MousePos => {
     };
 };
 
-export const clickedOnBox = (
+export const clickedItem = (
     mouseX: number,
     mouseY: number,
-    obj: { x: number; y: number }
+    item: { x: number; y: number },
+    itemSize: number = boxWidth
 ) => {
     const insideHorizontally =
-        mouseX >= obj.x && mouseX <= obj.x + boxWidth + 30;
+        mouseX >= item.x && mouseX <= item.x + itemSize + 30;
     const insideVertically =
-        mouseY >= obj.y && mouseY <= obj.y + boxHeight + 30;
+        mouseY >= item.y && mouseY <= item.y + itemSize + 30;
     return insideHorizontally && insideVertically;
 };

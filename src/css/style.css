@@ -111,7 +111,10 @@ header div {
 
 .specialItems {
     padding-top: 10px;
-    gap: calc((40px * 10 / 3) - 50px);
+    /* gap: calc((40px * 10 / 3) - 50px); */
+    height: calc(40px * 10);
+    justify-content: space-between;
+    align-items: center;
     display: flex;
     flex-direction: column;
 }
@@ -119,23 +122,25 @@ header div {
     background-color: var(--var-transparent-black);
     display: flex;
     align-items: center;
-    padding: 7px 5px;
+    padding: 5px;
     border-radius: 25px;
     gap: 7px;
     flex-direction: column;
     font-weight: bold;
+    cursor: pointer;
+    box-sizing: border-box;
+    border: 2px solid transparent;
+    position: relative;
     /* border: 1px solid black; */
 }
 
 .specialItems div span {
-    font-size: 17px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
 }
-.specialItems button {
-    /* background: linear-gradient(
-        rgb(170, 79, 5),
-        rgb(207, 157, 19),
-        rgb(170, 79, 5)
-    ); */
+.specialItems button:first-child {
     border: none;
     background-color: var(--var-transparent-black);
     padding: 0px;
@@ -147,16 +152,42 @@ header div {
     align-items: center;
     justify-content: center;
     border-radius: 50%;
+    cursor: pointer;
 }
 .specialItems button img {
     width: 25px;
     height: 25px;
 }
 
-.specialItems button:first-child img {
+.itemInfo {
+    position: absolute;
+    right: -7px;
+    top: -7px;
+    border-radius: 50%;
+    height: 17px;
+    width: 17px;
+    border: 2px solid rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: green;
+    font-size: 10px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    /* box-shadow: -3px -3px rgba(0, 0, 0, 0.7), 3px -3px rgba(0, 0, 0, 0.7),
+        3px 3px rgba(0, 0, 0, 0.7); */
+}
+
+.specialItems div:first-child img {
     transform: translateY(2px);
 }
 
+.specialItems div:nth-child(2) img,
+.specialItems div:nth-child(3) img {
+    width: 20px;
+    height: 20px;
+}
 @media (min-height: 620px) {
     .game {
         flex-direction: column;
@@ -164,12 +195,18 @@ header div {
     }
     .specialItems {
         flex-direction: row;
+        height: auto;
+        width: calc(40px * 10);
         /* transform: translateY(-20px); */
-        gap: calc((40px * 10 / 3) - 70px);
+        /* gap: calc((40px * 10 / 3) - 70px); */
     }
     .specialItems div {
         flex-direction: row;
-        padding: 7px 10px;
+        /* padding: 4px; */
+        /* padding: 2px; */
+        padding: 0px 10px 0px 5px;
+        width: 82px;
+        justify-content: space-between;
     }
 }
 
