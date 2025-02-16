@@ -34,7 +34,7 @@ export const bomb = {
 };
 
 export const specialtems = {
-    spin: 2,
+    spin: 9,
     resetShapes: 3,
     bomb: 2,
 };

@@ -142,31 +142,10 @@ export class Shape {
     }
 
     isInDefaultShape() {
-        const arrayMatch =
+        return (
             JSON.stringify(this.defaultBoxesChange) ===
-            JSON.stringify(this.boxesChange);
-
-        if (arrayMatch) {
-            return arrayMatch;
-        }
-        let changedCount = 0;
-        let unChangedCount = 0;
-        this.boxesChange.forEach((box) => {
-            if (box.x === "changed") {
-                changedCount++;
-            } else {
-                unChangedCount++;
-            }
-
-            if (box.y === "changed") {
-                changedCount++;
-            } else {
-                unChangedCount++;
-            }
-        });
-        //  console.log(this.boxesChange);
-
-        return changedCount === unChangedCount;
+            JSON.stringify(this.boxesChange)
+        );
     }
 
     updateDefaultChange() {
@@ -217,7 +196,6 @@ export class Shape {
         const { pivotX, pivotY, idlePivotX, idlePivotY } = this.Pivots;
         // Rotate the main shape and idle shape
 
-        console.log(this.idleShape);
         this.mainShape = spinShape(this.mainShape, pivotX, pivotY);
         this.idleShape = spinShape(this.boxes, idlePivotX, idlePivotY, idle);
         this.boxes = this.idleShape;
