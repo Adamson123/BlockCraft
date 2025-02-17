@@ -35,8 +35,8 @@ export const bomb = {
 
 export const specialtems = {
     spin: 9,
-    resetShapes: 3,
-    bomb: 2,
+    resetShapes: 9,
+    bomb: 9,
 };
 
 export const updateSpecialItemsCountDisplay = () => {

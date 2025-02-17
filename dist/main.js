@@ -163,8 +163,9 @@ spinShapeItem.addEventListener("click", () => {
         if (spinMode) {
             const rotatedShape = shapes.find((shape) => !shape.isInDefaultShape());
             if (rotatedShape) {
+                console.log(rotatedShape.boxesChange);
                 shapes.forEach((shape) => {
-                    shape.updateDefaultBoxesRelationship();
+                    shape.updateDefaultBoxesChange();
                 });
             }
             else {

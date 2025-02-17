@@ -24,9 +24,15 @@ export class Shape {
     strokeColor: string;
     index: number;
     boxesRelationship: BoxesRelationship[];
-    reversedBoxesRelationship: BoxesRelationship[];
-    defaultBoxesRelationship: BoxesRelationship[];
+    boxesChange: { x: string; y: string }[];
+    defaultBoxesChange: { x: string; y: string }[];
     isAccomodable: boolean;
+    Pivots: {
+        pivotX: number;
+        pivotY: number;
+        idlePivotX: number;
+        idlePivotY: number;
+    };
 
     /**
      * @param shape
@@ -53,11 +59,15 @@ export class Shape {
         this.strokeColor = matchedStrokeColor;
         this.index = index;
         this.boxesRelationship = this.getBoxesRelationship(shape);
-        this.defaultBoxesRelationship = this.getBoxesRelationship(shape);
+        this.boxesChange = this.getBoxesChange();
+        this.defaultBoxesChange = this.getBoxesChange();
         this.isAccomodable = true;
-        this.reversedBoxesRelationship = this.getBoxesRelationship(
-            shape.reverse()
-        );
+        this.Pivots = {
+            idlePivotX: this.findPivotX(idleShape),
+            idlePivotY: this.findPivotY(idleShape),
+            pivotX: this.findPivotX(shape),
+            pivotY: this.findPivotY(shape),
+        };
     }
 
     findWidth() {
@@ -124,20 +134,44 @@ export class Shape {
 
         return boxesRelationship;
     }
-    isInDefaultShape() {
-        const mathingRelationship =
-            JSON.stringify(this.boxesRelationship) ===
-            JSON.stringify(this.defaultBoxesRelationship);
-
-        if (mathingRelationship) return mathingRelationship;
-
-        return (
-            JSON.stringify(this.reversedBoxesRelationship) ===
-            JSON.stringify(this.defaultBoxesRelationship)
-        );
+    getBoxesChange() {
+        return this.boxesRelationship.map((box) => ({
+            x: box.x.event === "neutral" ? "unchanged" : "changed",
+            y: box.y.event === "neutral" ? "unchanged" : "changed",
+        }));
     }
-    updateDefaultBoxesRelationship() {
-        this.defaultBoxesRelationship = this.boxesRelationship;
+
+    isInDefaultShape() {
+        const arrayMatch =
+            JSON.stringify(this.defaultBoxesChange) ===
+            JSON.stringify(this.boxesChange);
+
+        console.log(this.boxes.length, Math.sqrt(this.boxes.length), "len");
+        if (arrayMatch || !Number.isInteger(Math.sqrt(this.boxes.length))) {
+            return arrayMatch;
+        }
+        let changedCount = 0;
+        let unChangedCount = 0;
+        this.boxesChange.forEach((box) => {
+            if (box.x === "changed") {
+                changedCount++;
+            } else if (box.x === "unchanged") {
+                unChangedCount++;
+            }
+
+            if (box.y === "changed") {
+                changedCount++;
+            } else if (box.y === "unchanged") {
+                unChangedCount++;
+            }
+        });
+        console.log(`Passes u:${changedCount}, c: ${unChangedCount}`);
+
+        return changedCount === unChangedCount;
+    }
+
+    updateDefaultBoxesChange() {
+        this.defaultBoxesChange = this.boxesChange;
     }
     toNotAccomodable() {
         this.isAccomodable = false;
@@ -157,12 +191,14 @@ export class Shape {
             shape.reduce((sum, { y }) => sum + y, 0) / shape.length
         );
     }
-    spin() {
-        const spinShape = (shape: BoxShape[], idle: number = 0) => {
-            // Calculate the pivot point (center of the shape)
-            const pivotX = this.findPivotX(shape);
-            const pivotY = this.findPivotY(shape);
 
+    spin() {
+        const spinShape = (
+            shape: BoxShape[],
+            pivotX: number,
+            pivotY: number,
+            idle: number = 0
+        ) => {
             return shape.map(({ x, y }) => {
                 const translatedX = x - pivotX;
                 const translatedY = y - pivotY;
@@ -179,17 +215,16 @@ export class Shape {
                 };
             });
         };
-
+        const { pivotX, pivotY, idlePivotX, idlePivotY } = this.Pivots;
         // Rotate the main shape and idle shape
-        this.mainShape = spinShape(this.mainShape);
-        this.idleShape = spinShape(this.boxes, idle);
+
+        this.mainShape = spinShape(this.mainShape, pivotX, pivotY);
+        this.idleShape = spinShape(this.boxes, idlePivotX, idlePivotY, idle);
         this.boxes = this.idleShape;
         this.width = this.findWidth();
         this.height = this.findHeight();
-        this.boxesRelationship = this.getBoxesRelationship(this.mainShape);
-        this.reversedBoxesRelationship = this.getBoxesRelationship(
-            this.mainShape.reverse()
-        );
+        this.boxesRelationship = this.getBoxesRelationship(this.idleShape);
+        this.boxesChange = this.getBoxesChange();
     }
     drawSpinningIcon() {
         const pivotX = this.findPivotX(this.idleShape);

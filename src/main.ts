@@ -196,8 +196,10 @@ spinShapeItem.addEventListener("click", () => {
                 (shape) => !shape.isInDefaultShape()
             );
             if (rotatedShape) {
+                console.log(rotatedShape.boxesChange);
+
                 shapes.forEach((shape) => {
-                    shape.updateDefaultBoxesRelationship();
+                    shape.updateDefaultBoxesChange();
                 });
             } else {
                 specialtems.spin++;
