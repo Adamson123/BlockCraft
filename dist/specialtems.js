@@ -49,7 +49,7 @@ const about = (num) => {
     return `
     <h4 style="text-decoration: underline;">Ways to Get ?</h4>
     <ul style="text-align: left;">
-        <li>Clear ${num}${num === 5 ? " or more" : ""} dimensions.</li>
+        <li>Clear ${num}${num === 6 ? " or more" : ""} dimensions.</li>
         <li>Clear a dimension with a matching color.</li>
     </ul>
 `;
@@ -57,15 +57,15 @@ const about = (num) => {
 const itemsInfo = [
     {
         name: "SPIN",
-        about: about(3),
+        about: about(4),
     },
     {
         name: "RESET SHAPES",
-        about: about(5),
+        about: about(6),
     },
     {
         name: "BOMB",
-        about: about(4),
+        about: about(5),
     },
 ];
 export const toggleItemInfoDisplay = (display = "flex", index = 0) => {

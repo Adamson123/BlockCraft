@@ -62,7 +62,7 @@ export const displayRemark = (comboCount, dimensionColorMatchedCount) => {
                 playSound("incredible");
                 break;
             default:
-                if (comboCount) {
+                if (comboCount > 4) {
                     remarkText = "INCREDIBLE!";
                     resetShapes += comboCount - 4;
                     playSound("incredible");
