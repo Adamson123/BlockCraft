@@ -36,7 +36,7 @@ export const bomb = {
     },
 };
 export const specialtems = getFromLocalStorage("items") || {
-    spin: 2,
+    spin: 3,
     resetShapes: 3,
     bomb: 3,
 };

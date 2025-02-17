@@ -135,7 +135,6 @@ export class Shape {
         const { pivotX, pivotY, idlePivotX, idlePivotY } = this.Pivots;
         // Rotate the main shape and idle shape
         this.currentRotate++;
-        console.log(this.currentRotate, this.rotates);
         if (this.currentRotate > this.rotates) {
             this.currentRotate = 0;
         }
