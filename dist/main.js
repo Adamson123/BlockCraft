@@ -243,9 +243,10 @@ document.querySelectorAll(".itemInfo").forEach((btn, index) => {
         toggleItemInfoDisplay("flex", index);
     });
 });
-document
-    .querySelector(".hideItemInfoBtn")
-    ?.addEventListener("click", () => toggleItemInfoDisplay("none"));
+document.querySelector(".hideItemInfoBtn")?.addEventListener("click", () => {
+    playSound("click");
+    toggleItemInfoDisplay("none");
+});
 fullscreenBtn?.addEventListener("click", () => {
     toggleFullscreen(fullscreenBtn);
 });
@@ -276,8 +277,10 @@ document
     draw(shapes, currentShape, boxes);
 });
 //TODO: Fix for devices that might support both touchscreen and mouse
-const isTouchscreen = window.matchMedia("(pointer:coarse)").matches;
-if (!isTouchscreen) {
+//const isTouchscreen = window.matchMedia("(pointer:coarse)").matches;
+const isPC = window.matchMedia("(any-pointer:fine)").matches &&
+    navigator.maxTouchPoints < 2; //!isTouchscreen;
+if (isPC) {
     //mouse events
     board.addEventListener("mousemove", handleMouseMovement);
     board.addEventListener("mousedown", handleMouseDown);

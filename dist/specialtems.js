@@ -45,27 +45,27 @@ export const updateSpecialItemsCountDisplay = () => {
     spinCount.textContent = String(specialtems.spin);
     resetShapesCount.textContent = String(specialtems.resetShapes);
 };
-const about = () => {
+const about = (num) => {
     return `
-    <h4 style="text-decoration:underline">Ways To Get ?</h4>
-    <ul style="text-align:left">
-        <li>Clear two dimensions</li>
-        <li>Clear dimension with a matching color</li>
+    <h4 style="text-decoration: underline;">Ways to Get ?</h4>
+    <ul style="text-align: left;">
+        <li>Clear ${num}${num === 5 ? " or more" : ""} dimensions.</li>
+        <li>Clear a dimension with a matching color.</li>
     </ul>
-    `;
+`;
 };
 const itemsInfo = [
     {
         name: "SPIN",
-        about: about(),
+        about: about(3),
     },
     {
         name: "RESET SHAPES",
-        about: about(),
+        about: about(5),
     },
     {
         name: "BOMB",
-        about: about(),
+        about: about(4),
     },
 ];
 export const toggleItemInfoDisplay = (display = "flex", index = 0) => {
