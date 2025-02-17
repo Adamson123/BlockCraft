@@ -35,7 +35,7 @@ export const updateScore = (
 ) => {
     gameScore.score += comboPoints > 0 ? comboPoints + points : points;
     //gameScore.score += dimensionColorMatchedCount;
-
+    highestScoreText.textContent = gameScore.highestScore.toString();
     if (gameScore.score <= 0 && !reset) {
         return;
     }
