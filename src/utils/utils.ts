@@ -37,3 +37,10 @@ export const clickedItem = (
         mouseY >= item.y && mouseY <= item.y + itemSize + 30;
     return insideHorizontally && insideVertically;
 };
+
+export const modifyElementDisplay = (
+    element: HTMLParagraphElement | HTMLDivElement | HTMLHeadElement,
+    display: "none" | "block" | "flex" | "inline-block"
+) => {
+    element.style.display = display;
+};

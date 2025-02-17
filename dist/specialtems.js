@@ -1,7 +1,12 @@
+import { getFromLocalStorage } from "./utils/localStorageUtils.js";
 import { boardWidth, boxWidth } from "./globals.js";
+import { modifyElementDisplay } from "./utils/utils.js";
 const bombCount = document.querySelector(".bombCount");
 const spinCount = document.querySelector(".spinCount");
 const resetShapesCount = document.querySelector(".resetShapesCount");
+const itemInfoDisplay = document.querySelector(".itemInfoDisplay");
+const itemName = itemInfoDisplay.querySelector("h3");
+const aboutItem = itemInfoDisplay.querySelector("p");
 const times = 3;
 export const bomb = {
     x: (boardWidth - boxWidth * times) / 2,
@@ -30,13 +35,33 @@ export const bomb = {
         this.imageY = () => this.y + (this.size - this.bombImageSize) / 2;
     },
 };
-export const specialtems = {
-    spin: 9,
-    resetShapes: 9,
-    bomb: 9,
+export const specialtems = getFromLocalStorage("items") || {
+    spin: 2,
+    resetShapes: 3,
+    bomb: 3,
 };
 export const updateSpecialItemsCountDisplay = () => {
     bombCount.textContent = String(specialtems.bomb);
     spinCount.textContent = String(specialtems.spin);
     resetShapesCount.textContent = String(specialtems.resetShapes);
+};
+const itemsInfo = [
+    {
+        name: "SPIN",
+        about: `ggggggfff`,
+    },
+    {
+        name: "RESET SHAPES",
+        about: `ggggggfff`,
+    },
+    {
+        name: "BOMB",
+        about: `ggggggfff`,
+    },
+];
+export const toggleItemInfoDisplay = (display = "flex", index = 0) => {
+    const itemInfo = itemsInfo[index];
+    itemName.textContent = itemInfo.name;
+    aboutItem.textContent = itemInfo.about;
+    modifyElementDisplay(itemInfoDisplay, display);
 };

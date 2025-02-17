@@ -24,3 +24,6 @@ export const clickedItem = (mouseX, mouseY, item, itemSize = boxWidth) => {
     const insideVertically = mouseY >= item.y && mouseY <= item.y + itemSize + 30;
     return insideHorizontally && insideVertically;
 };
+export const modifyElementDisplay = (element, display) => {
+    element.style.display = display;
+};

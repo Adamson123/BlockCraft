@@ -1,0 +1,142 @@
+.remarkContainer {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    translate: -50% -40%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: boldFont;
+    transition: all 0.2s;
+    scale: 0;
+    pointer-events: none;
+    text-align: center;
+    text-wrap: nowrap;
+    gap: 5px;
+}
+
+.remarkContainer h3,
+.remarkContainer h4,
+.remarkContainer p {
+    margin: 0;
+    padding: 0;
+}
+.remarkContainer h3 {
+    color: white;
+    font-size: 30px;
+    font-weight: bolder;
+    text-shadow: -2px -2px skyblue, 2px 2px skyblue, -2px 2px skyblue,
+        2px 2px skyblue;
+}
+.remarkContainer p {
+    font-weight: bold;
+    font-size: 20px;
+    color: var(--var-orange-color);
+    margin-top: -5px;
+}
+
+.specialItemsRewardDisplay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 17px;
+    background-color: var(--var-transparent-black);
+    padding: 7px 3px;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+.specialItemsRewardDisplay img {
+    width: 25px;
+    height: 25px;
+}
+.specialItemsRewardDisplay div:first-child img {
+    transform: translateY(3px);
+}
+
+.specialItemsRewardDisplay div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.specialItemsRewardDisplay div > span {
+    display: flex;
+    align-items: center;
+}
+
+.itemInfoDisplay p {
+    text-align: center;
+}
+.info {
+    max-width: 300px;
+}
+.info div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.info button {
+    border: none;
+    background-color: var(--var-green-color);
+}
+.pauseContainer,
+.itemInfoDisplay {
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.3);
+    inset: 0 0 0 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.info,
+.pause {
+    background-color: rgb(243, 174, 149);
+    padding: 30px 40px;
+    border-radius: 20px;
+    border: 5px solid var(--var-orange-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+.pause h3,
+.info h3 {
+    color: skyblue;
+    font-weight: bold;
+    font-size: 25px;
+    text-shadow: -1px -1px black, 1px 1px black, -1px 1px black, 1px 1px black;
+    border-radius: 5px;
+    font-family: boldFont;
+    position: absolute;
+    text-wrap: nowrap;
+    text-align: center;
+    top: -45px;
+}
+
+.gameScoreContainer {
+    margin-bottom: 15px;
+    font-family: boldFont;
+}
+
+.gameScoreContainer span:nth-child(2) {
+    color: var(--var-orange-color);
+}
+
+.pause div:nth-child(3) {
+    display: flex;
+    gap: 30px;
+}
+.pause div:nth-child(3) button:first-child {
+    background-color: var(--var-red-color);
+    padding: 18px 27px;
+    border: none;
+}
+
+.pause div:nth-child(3) button:nth-child(2) {
+    background-color: var(--var-green-color);
+    padding: 18px 27px;
+    border: none;
+}

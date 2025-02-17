@@ -1,5 +1,5 @@
 import Box from "./box.js";
-import { boxesOnHover, boxWidth, gameScore } from "../globals.js";
+import { boxesOnHover, boxWidth } from "../globals.js";
 import { displayRemark, updateScore } from "../scoring.js";
 import { playSound } from "../settings.js";
 
@@ -81,7 +81,7 @@ export const resetBoxesInOccupiedDimensions = (
     }
 
     comboPoints *= 50;
-    dimensionColorMatchedCount *= 100;
+    //dimensionColorMatchedCount *= 100;
     updateScore(comboPoints, points, dimensionColorMatchedCount);
 
     return noOccupiedDimension; //occupiedBoxes;

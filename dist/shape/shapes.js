@@ -1,4 +1,5 @@
 import { boxWidth, boardHeight, matchedColor, matchedStrokeColor, boxHeight, boardWidth, idle, hoverColor, ctx, } from "../globals.js";
+import { saveToLocalStorage } from "../utils/localStorageUtils.js";
 import { shapesEmoji } from "./shapesEmoji.js";
 const spinSvg = new Image();
 spinSvg.src = "./src/assets/images/spin-3.svg";
@@ -13,10 +14,10 @@ export class Shape {
     strokeColor;
     index;
     boxesRelationship;
-    boxesChange;
-    defaultBoxesChange;
     isAccomodable;
     Pivots;
+    rotates;
+    currentRotate;
     /**
      * @param shape
      * @param idleShape
@@ -25,9 +26,9 @@ export class Shape {
      * @param height
      * @param color
      */
-    constructor(shape, idleShape, index, color) {
+    constructor({ idleShape, mainShape, index, color, isAccomodable, rotates, }) {
         this.boxes = idleShape;
-        this.mainShape = shape;
+        this.mainShape = mainShape;
         // Use structuredClone to deep clone the array of boxes
         this.idleShape = idleShape;
         this.width = this.findWidth();
@@ -36,16 +37,16 @@ export class Shape {
         this.mainColor = color;
         this.strokeColor = matchedStrokeColor;
         this.index = index;
-        this.boxesRelationship = this.getBoxesRelationship(shape);
-        this.boxesChange = this.getBoxesChange();
-        this.defaultBoxesChange = this.getBoxesChange();
-        this.isAccomodable = true;
+        this.boxesRelationship = this.getBoxesRelationship(mainShape);
+        this.isAccomodable = isAccomodable;
         this.Pivots = {
             idlePivotX: this.findPivotX(idleShape),
             idlePivotY: this.findPivotY(idleShape),
-            pivotX: this.findPivotX(shape),
-            pivotY: this.findPivotY(shape),
+            pivotX: this.findPivotX(mainShape),
+            pivotY: this.findPivotY(mainShape),
         };
+        this.rotates = rotates; //TODO
+        this.currentRotate = 0;
     }
     findWidth() {
         return (this.mainShape.reduce((sum, { x }) => (sum = x > sum ? x : sum), 0) + boxWidth);
@@ -101,35 +102,6 @@ export class Shape {
             y: box.y.event === "neutral" ? "unchanged" : "changed",
         }));
     }
-    isInDefaultShape() {
-        const arrayMatch = JSON.stringify(this.defaultBoxesChange) ===
-            JSON.stringify(this.boxesChange);
-        console.log(this.boxes.length, Math.sqrt(this.boxes.length), "len");
-        if (arrayMatch || !Number.isInteger(Math.sqrt(this.boxes.length))) {
-            return arrayMatch;
-        }
-        let changedCount = 0;
-        let unChangedCount = 0;
-        this.boxesChange.forEach((box) => {
-            if (box.x === "changed") {
-                changedCount++;
-            }
-            else if (box.x === "unchanged") {
-                unChangedCount++;
-            }
-            if (box.y === "changed") {
-                changedCount++;
-            }
-            else if (box.y === "unchanged") {
-                unChangedCount++;
-            }
-        });
-        console.log(`Passes u:${changedCount}, c: ${unChangedCount}`);
-        return changedCount === unChangedCount;
-    }
-    updateDefaultBoxesChange() {
-        this.defaultBoxesChange = this.boxesChange;
-    }
     toNotAccomodable() {
         this.isAccomodable = false;
         this.color = hoverColor;
@@ -162,18 +134,21 @@ export class Shape {
         };
         const { pivotX, pivotY, idlePivotX, idlePivotY } = this.Pivots;
         // Rotate the main shape and idle shape
+        this.currentRotate++;
+        console.log(this.currentRotate, this.rotates);
+        if (this.currentRotate > this.rotates) {
+            this.currentRotate = 0;
+        }
         this.mainShape = spinShape(this.mainShape, pivotX, pivotY);
         this.idleShape = spinShape(this.boxes, idlePivotX, idlePivotY, idle);
         this.boxes = this.idleShape;
         this.width = this.findWidth();
         this.height = this.findHeight();
-        this.boxesRelationship = this.getBoxesRelationship(this.idleShape);
-        this.boxesChange = this.getBoxesChange();
+        this.boxesRelationship = this.getBoxesRelationship(this.mainShape);
     }
     drawSpinningIcon() {
-        const pivotX = this.findPivotX(this.idleShape);
-        const pivotY = this.findPivotY(this.idleShape);
-        ctx.drawImage(spinSvg, pivotX - 6, pivotY - 2, 25, 30);
+        const { idlePivotX, idlePivotY } = this.Pivots;
+        ctx.drawImage(spinSvg, idlePivotX - 6, idlePivotY - 2, 25, 30);
     }
 }
 const getBoxYPosition = (times = 1, subBy = 0) => {
@@ -221,19 +196,27 @@ const generateShape = (shape) => {
 };
 //Populates shapes array
 export const populateShapes = () => {
-    const allColors = [matchedColor, "red", "yellow", "green", "purple"];
+    const allColors = [matchedColor, "red"];
     const shapes = [];
     for (let i = 0; i < 3; i++) {
-        const pickedShape = shapesEmoji[Math.floor(Math.random() * shapesEmoji.length)];
+        const { emoji, rotates } = shapesEmoji[Math.floor(Math.random() * shapesEmoji.length)];
         const color = allColors[Math.floor(Math.random() * allColors.length)];
         // Adjust each idle shape's x position
-        const { shape, idleShape } = generateShape(pickedShape);
+        const { shape, idleShape } = generateShape(emoji);
         const adjustedShape = idleShape.map((box) => ({
             ...box,
             x: box.x + i * (boardWidth / 3) + boardWidth / 10 + 5,
         }));
-        const shapeIns = new Shape(shape, adjustedShape, i, color);
+        const shapeIns = new Shape({
+            mainShape: shape,
+            idleShape: adjustedShape,
+            index: i,
+            color,
+            isAccomodable: true,
+            rotates,
+        });
         shapes.push(shapeIns);
     }
+    saveToLocalStorage("shapes", shapes);
     return shapes;
 };

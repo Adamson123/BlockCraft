@@ -1,9 +1,11 @@
 import Box from "./box/box.js";
-import { gameScore } from "./globals.js";
 
 import { playSound } from "./settings.js";
 import { Shape } from "./shape/shapes.js";
 import { findOccupiableBoxes } from "./box/boxesHandler.js";
+import { modifyElementDisplay } from "./utils/utils.js";
+import { saveToLocalStorage } from "./utils/localStorageUtils.js";
+import { gameScore } from "./scoring.js";
 
 const pauseContainer =
     document.querySelector<HTMLDivElement>(".pauseContainer")!;
@@ -31,6 +33,7 @@ export const checkLose = (
             shape.toNotAccomodable();
         }
     }
+    saveToLocalStorage("shapes", shapes);
 
     if (!isSpaceAvailable) {
         playSound("descending-tones");
@@ -48,10 +51,10 @@ let pause = false;
 export const toggleGameState = (gameOver: boolean = false) => {
     playSound();
     if (pause) {
-        pauseContainer.style.display = "none";
+        modifyElementDisplay(pauseContainer, "none");
         pause = false;
     } else {
-        pauseContainer.style.display = "flex";
+        modifyElementDisplay(pauseContainer, "flex");
         pause = true;
     }
     if (gameOver) {

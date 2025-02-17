@@ -1,4 +1,8 @@
-import { boxesOnHover, board, hoverColor, gameScore } from "./globals.js";
+import {
+    getFromLocalStorage,
+    saveToLocalStorage,
+} from "./utils/localStorageUtils.js";
+import { boxesOnHover, board, hoverColor } from "./globals.js";
 import { populateShapes, Shape } from "./shape/shapes.js";
 import Box, { populateBoxes } from "./box/box.js";
 import { draw } from "./draw.js";
@@ -6,10 +10,11 @@ import { clickedItem, getMousePosition } from "./utils/utils.js";
 import { playSound, toggleFullscreen, toggleSoundMode } from "./settings.js";
 import { checkLose, toggleGameState } from "./gameState.js";
 import { resetBoxesInOccupiedDimensions } from "./box/boxesHandler.js";
-import { updateScore } from "./scoring.js";
+import { gameScore, updateScore } from "./scoring.js";
 import {
     bomb,
     specialtems,
+    toggleItemInfoDisplay,
     updateSpecialItemsCountDisplay,
 } from "./specialtems.js";
 
@@ -22,12 +27,18 @@ const resetShapesItem =
 const bombItem = document.querySelector<HTMLDivElement>(".bombItem")!;
 let mousedown = false;
 let spinMode = false;
-//let bomb.bombMode = false;
+
+const boxesFromStorage = getFromLocalStorage("boxes");
+let boxes: Box[] = boxesFromStorage?.length
+    ? boxesFromStorage
+    : populateBoxes();
 
 let currentShape: Shape | undefined;
 
-let boxes: Box[] = populateBoxes();
-let shapes: Shape[] = populateShapes();
+const shapesFromStorage = getFromLocalStorage("shapes");
+let shapes: Shape[] = shapesFromStorage?.length
+    ? shapesFromStorage
+    : populateShapes();
 
 const updateShapePosition = (x: number, y: number) => {
     if (!currentShape || spinMode) return;
@@ -67,6 +78,7 @@ const handleShapeSelection = (event: MouseEvent | TouchEvent) => {
         updateShapePosition(x, y);
         if (spinMode) {
             currentShape.spin();
+            saveToLocalStorage("shapes", shapes);
             checkLose(boxes, shapes, checkLoseCallback);
         }
     }
@@ -116,6 +128,7 @@ const checkLoseCallback = (box: Box, lastBox: Box) => {
 };
 const resetBoxesCallback = () => {
     checkLose(boxes, shapes, checkLoseCallback);
+    saveToLocalStorage("boxes", boxes);
     draw(shapes, currentShape, boxes);
 };
 
@@ -135,6 +148,7 @@ const handleMouseOut = () => {
                     (currentShape as Shape).color
                 );
             });
+
             noOccupiedDimension = resetBoxesInOccupiedDimensions(
                 boxes,
                 resetBoxesCallback
@@ -142,6 +156,10 @@ const handleMouseOut = () => {
             shapes = shapes.filter(
                 (shape) => shape.index !== currentShape!.index
             );
+
+            saveToLocalStorage("boxes", boxes);
+            saveToLocalStorage("shapes", shapes);
+
             playSound("glock");
         } else {
             playSound("woof");
@@ -159,6 +177,7 @@ const handleMouseOut = () => {
             playSound("click");
         if (bomb.bombMode) {
             if (bomb.boxes.size) {
+                //might decrease here bomb amount here
                 const boxesToBomb = [...bomb.boxes].filter(
                     (boxIndex) => boxes[boxIndex - 1].isOccupied
                 );
@@ -174,6 +193,7 @@ const handleMouseOut = () => {
                 bomb.bombMode = false;
                 bombItem.style.border = "2px solid transparent";
             }
+
             bomb.resetBomb();
         }
 
@@ -183,6 +203,7 @@ const handleMouseOut = () => {
 };
 
 draw(shapes, currentShape, boxes);
+updateScore(0, 0, 0);
 updateSpecialItemsCountDisplay();
 
 spinShapeItem.addEventListener("click", () => {
@@ -193,13 +214,11 @@ spinShapeItem.addEventListener("click", () => {
         //if we are trying tobv
         if (spinMode) {
             const rotatedShape = shapes.find(
-                (shape) => !shape.isInDefaultShape()
+                (shape) => shape.currentRotate !== 0
             );
             if (rotatedShape) {
-                console.log(rotatedShape.boxesChange);
-
                 shapes.forEach((shape) => {
-                    shape.updateDefaultBoxesChange();
+                    shape.currentRotate = 0;
                 });
             } else {
                 specialtems.spin++;
@@ -211,11 +230,14 @@ spinShapeItem.addEventListener("click", () => {
         if (spinMode) {
             specialtems.spin--;
         }
+        saveToLocalStorage("items", specialtems);
         updateSpecialItemsCountDisplay();
         draw(shapes, currentShape, boxes, spinMode);
         spinShapeItem.style.border = spinMode
             ? "2px solid yellow"
             : "2px solid transparent";
+    } else {
+        toggleItemInfoDisplay("flex", 0);
     }
     playSound("click");
 });
@@ -223,23 +245,52 @@ spinShapeItem.addEventListener("click", () => {
 resetShapesItem.addEventListener("click", () => {
     if (specialtems.resetShapes) {
         specialtems.resetShapes--;
+        saveToLocalStorage("items", specialtems);
         updateSpecialItemsCountDisplay();
         shapes = populateShapes();
+        saveToLocalStorage("shapes", shapes);
         draw(shapes, currentShape, boxes, spinMode);
+    } else {
+        toggleItemInfoDisplay("flex", 1);
     }
     playSound("click");
 });
 
 bombItem.addEventListener("click", () => {
-    bomb.bombMode = bomb.bombMode ? false : true;
-    // draw(shapes, currentShape, boxes, bomb.bombMode);
-    bombItem.style.border = bomb.bombMode
-        ? "2px solid rgb(221,72,68)"
-        : "2px solid transparent";
+    if (specialtems.bomb || bomb.bombMode) {
+        if (bomb.bombMode) {
+            specialtems.bomb++;
+        }
 
-    draw(shapes, currentShape, boxes, spinMode);
+        // console.log("mode", bomb.bombMode);
+        bomb.bombMode = bomb.bombMode ? false : true;
+
+        if (bomb.bombMode) specialtems.bomb--; //or display cancel
+
+        saveToLocalStorage("items", specialtems);
+        updateSpecialItemsCountDisplay();
+        // draw(shapes, currentShape, boxes, bomb.bombMode);
+        bombItem.style.border = bomb.bombMode
+            ? "2px solid rgb(221,72,68)"
+            : "2px solid transparent";
+
+        draw(shapes, currentShape, boxes, spinMode);
+    } else {
+        toggleItemInfoDisplay("flex", 2);
+    }
     playSound("click");
 });
+
+document.querySelectorAll(".itemInfo")!.forEach((btn, index) => {
+    btn.addEventListener("click", (event) => {
+        event.stopImmediatePropagation();
+        toggleItemInfoDisplay("flex", index);
+    });
+});
+
+document
+    .querySelector(".hideItemInfoBtn")
+    ?.addEventListener("click", () => toggleItemInfoDisplay("none"));
 
 fullscreenBtn?.addEventListener("click", () => {
     toggleFullscreen(fullscreenBtn);
@@ -247,6 +298,7 @@ fullscreenBtn?.addEventListener("click", () => {
 soundBtn?.addEventListener("click", () => {
     toggleSoundMode(soundBtn);
 });
+
 //pause
 document
     .querySelector<HTMLButtonElement>(".pauseBtn")
@@ -262,8 +314,12 @@ document
     ?.addEventListener("click", () => {
         gameScore.score = 0;
         gameScore.surpassedHighScore = false;
+        saveToLocalStorage("score", gameScore);
         boxes = populateBoxes();
+
         shapes = populateShapes();
+        saveToLocalStorage("boxes", boxes);
+        saveToLocalStorage("shapes", shapes);
         updateScore(0, 0, 0, true);
         toggleGameState();
         draw(shapes, currentShape, boxes);

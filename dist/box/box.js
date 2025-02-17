@@ -1,24 +1,25 @@
 import { drawInsetShadow, resetShadowValues } from "../draw.js";
 import { boxHeight, boxWidth, boxesOnHover, ctx, defaultColor, defaultStrokeColor, hoverColor, matchedStrokeColor, start, } from "../globals.js";
 import { bomb } from "../specialtems.js";
+import { saveToLocalStorage } from "../utils/localStorageUtils.js";
 export default class Box {
     x;
     y;
-    color;
+    color = defaultColor;
     width;
     height;
     index;
-    isOccupied;
-    strokeColor;
-    constructor(x, y, index) {
+    isOccupied = false;
+    strokeColor = defaultColor;
+    constructor({ x, y, index, isOccupied = false, strokeColor = defaultStrokeColor, color = defaultColor, }) {
         this.x = x;
         this.y = y;
-        this.color = defaultColor;
+        this.color = color;
         this.width = boxWidth;
         this.height = boxHeight;
         this.index = index;
-        this.isOccupied = false;
-        this.strokeColor = defaultStrokeColor;
+        this.isOccupied = isOccupied;
+        this.strokeColor = strokeColor;
     }
     // `shape` is an array of objects matching the ShapeBox interface.
     shapeOver(shape) {
@@ -112,8 +113,13 @@ export const populateBoxes = () => {
     for (let i = 0; i < row; i++) {
         for (let j = 0; j < column; j++) {
             count++;
-            boxes.push(new Box(i * boxWidth + start, j * boxHeight + 10, count));
+            boxes.push(new Box({
+                x: i * boxWidth + start,
+                y: j * boxHeight + 10,
+                index: count,
+            }));
         }
     }
+    saveToLocalStorage("boxes", boxes);
     return boxes;
 };

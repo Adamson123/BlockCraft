@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>BlockCraft</title>
         <link rel="stylesheet" href="./src/css/style.css" />
+        <link rel="stylesheet" href="./src/css/overlayStyles.css" />
     </head>
     <body>
         <header>
@@ -42,12 +43,49 @@
         <!-- <img src="../src/assets/smoke.png" class="smoke" /> -->
         <div class="game">
             <div>
+                <!-- <progress></progress> -->
                 <canvas class="board"></canvas>
 
                 <!-- Remark -->
                 <div class="remarkContainer">
                     <h3 class="remark">GOOD JOB!</h3>
                     <p class="points">200+</p>
+                    <div class="colorMatched">
+                        <h4>Color matched!!</h4>
+                        <div class="specialItemsRewardDisplay">
+                            <div>
+                                <img
+                                    src="./src/assets/images/spin-2.svg"
+                                    alt="spin"
+                                />
+                                <span>
+                                    <span style="font-size: large">&times;</span
+                                    ><span class="spinCount2">0</span>
+                                </span>
+                            </div>
+                            <div>
+                                <img
+                                    src="./src/assets/images/swap.svg"
+                                    alt="reset shapes"
+                                />
+                                <span>
+                                    <span style="font-size: large">&times;</span
+                                    ><span class="resetShapesCount2">0</span>
+                                </span>
+                            </div>
+
+                            <div>
+                                <img
+                                    src="./src/assets/images/Bomb.png"
+                                    alt="bomb"
+                                />
+                                <span>
+                                    <span style="font-size: large">&times;</span
+                                    ><span class="bombCount2">0</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!-- Special Items -->
@@ -65,7 +103,10 @@
 
                 <div class="resetShapesItem">
                     <button>
-                        <img src="./src/assets/images/swap.svg" alt="spin" />
+                        <img
+                            src="./src/assets/images/swap.svg"
+                            alt="reset shapes"
+                        />
                     </button>
                     <span>
                         <span style="font-size: xx-large">&times;</span
@@ -76,7 +117,7 @@
 
                 <div class="bombItem">
                     <button>
-                        <img src="./src/assets/images/Bomb.png" alt="spin" />
+                        <img src="./src/assets/images/Bomb.png" alt="bomb" />
                     </button>
                     <span>
                         <span style="font-size: xx-large">&times;</span
@@ -87,6 +128,22 @@
             </div>
         </div>
 
+        <!-- Items info -->
+        <div class="itemInfoDisplay">
+            <div class="info">
+                <h3>SPIN</h3>
+                <div class="generalButton">
+                    <p>
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                        Nulla pariatur, vitae ea vel nam ipsam error perferendis
+                        magnam rerum nisi eum veniam obcaecati magni culpa at.
+                    </p>
+                    <button class="hideItemInfoBtn">
+                        <img src="./src/assets/images/play.svg" alt="play" />
+                    </button>
+                </div>
+            </div>
+        </div>
         <!-- PAUSE / GAMEOVER -->
         <div class="pauseContainer generalButton">
             <div class="pause">
@@ -110,6 +167,7 @@
                 </div>
             </div>
         </div>
+
         <!-- Images that need to be loaded before they are used -->
         <div style="display: none">
             <img src="./src/assets/images/spin-3.svg" />

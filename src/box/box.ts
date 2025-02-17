@@ -11,26 +11,35 @@ import {
     start,
 } from "../globals.js";
 import { bomb } from "../specialtems.js";
+import { saveToLocalStorage } from "../utils/localStorageUtils.js";
 
+type BoxTypes = ClassField<Box>;
 export default class Box {
     x: number;
     y: number;
-    color: string;
+    color: string = defaultColor;
     width: number;
     height: number;
     index: number;
-    isOccupied: boolean;
-    strokeColor: string;
+    isOccupied: boolean = false;
+    strokeColor: string = defaultColor;
 
-    constructor(x: number, y: number, index: number) {
+    constructor({
+        x,
+        y,
+        index,
+        isOccupied = false,
+        strokeColor = defaultStrokeColor,
+        color = defaultColor,
+    }: BoxTypes) {
         this.x = x;
         this.y = y;
-        this.color = defaultColor;
+        this.color = color;
         this.width = boxWidth;
         this.height = boxHeight;
         this.index = index;
-        this.isOccupied = false;
-        this.strokeColor = defaultStrokeColor;
+        this.isOccupied = isOccupied;
+        this.strokeColor = strokeColor;
     }
 
     // `shape` is an array of objects matching the ShapeBox interface.
@@ -142,9 +151,14 @@ export const populateBoxes = (): Box[] => {
         for (let j = 0; j < column; j++) {
             count++;
             boxes.push(
-                new Box(i * boxWidth + start, j * boxHeight + 10, count)
+                new Box({
+                    x: i * boxWidth + start,
+                    y: j * boxHeight + 10,
+                    index: count,
+                } as BoxTypes)
             );
         }
     }
+    saveToLocalStorage("boxes", boxes);
     return boxes;
 };

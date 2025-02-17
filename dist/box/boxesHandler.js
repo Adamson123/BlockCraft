@@ -66,7 +66,7 @@ export const resetBoxesInOccupiedDimensions = (boxes, callback) => {
         });
     }
     comboPoints *= 50;
-    dimensionColorMatchedCount *= 100;
+    //dimensionColorMatchedCount *= 100;
     updateScore(comboPoints, points, dimensionColorMatchedCount);
     return noOccupiedDimension; //occupiedBoxes;
 };

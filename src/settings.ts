@@ -1,5 +1,3 @@
-import { gameScore } from "./globals.js";
-
 // const whoosh = document.querySelector<HTMLAudioElement>(".whoosh")!;
 // const glock = document.querySelector<HTMLAudioElement>(".glock")!;
 // const descendingTones =

@@ -1,13 +1,28 @@
-import { gameScore } from "./globals.js";
 import { playSound } from "./settings.js";
+import { specialtems, updateSpecialItemsCountDisplay } from "./specialtems.js";
+import { getFromLocalStorage, saveToLocalStorage, } from "./utils/localStorageUtils.js";
+import { modifyElementDisplay } from "./utils/utils.js";
 const highestScoreText = document.querySelector(".highestScore");
 const scoreText = document.querySelector(".score");
 const remarkContainer = document.querySelector(".remarkContainer");
 const points = document.querySelector(".points");
 const remark = document.querySelector(".remark");
+const colorMatched = document.querySelector(".colorMatched");
+const specialItemsRewardDisplay = document
+    .querySelector(".specialItemsRewardDisplay")
+    .querySelectorAll("div");
+const bombCount2 = document.querySelector(".bombCount2");
+const spinCount2 = document.querySelector(".spinCount2");
+const resetShapesCount2 = document.querySelector(".resetShapesCount2");
+const colorMatchedText = colorMatched.querySelector("h4");
+export const gameScore = getFromLocalStorage("score") || {
+    highestScore: 0,
+    score: 0,
+    surpassedHighScore: false,
+};
 export const updateScore = (comboPoints, points, dimensionColorMatchedCount, reset = false) => {
     gameScore.score += comboPoints > 0 ? comboPoints + points : points;
-    gameScore.score += dimensionColorMatchedCount;
+    //gameScore.score += dimensionColorMatchedCount;
     if (gameScore.score <= 0 && !reset) {
         return;
     }
@@ -15,14 +30,18 @@ export const updateScore = (comboPoints, points, dimensionColorMatchedCount, res
         gameScore.surpassedHighScore = true;
         gameScore.highestScore = gameScore.score;
     }
+    saveToLocalStorage("score", gameScore);
     scoreText.textContent = gameScore.score.toString();
     highestScoreText.textContent = gameScore.highestScore.toString();
 };
 export const displayRemark = (comboCount, dimensionColorMatchedCount) => {
-    if (comboCount > 0) {
+    if (comboCount > 0 || dimensionColorMatchedCount) {
         let remarkText = "";
-        console.log(comboCount / 50);
-        switch (comboCount / 50) {
+        comboCount /= 50;
+        let spin = dimensionColorMatchedCount;
+        let bomb = dimensionColorMatchedCount;
+        let resetShapes = dimensionColorMatchedCount;
+        switch (comboCount) {
             case 1:
                 remarkText = "NICE!";
                 playSound("nice");
@@ -33,22 +52,78 @@ export const displayRemark = (comboCount, dimensionColorMatchedCount) => {
                 break;
             case 3:
                 remarkText = "AMAZING!";
+                spin++;
                 playSound("amazing");
                 break;
             case 4:
                 remarkText = "INCREDIBLE!";
+                bomb++;
                 playSound("incredible");
                 break;
             default:
-                remarkText = "INCREDIBLE!";
-                playSound("incredible");
+                if (comboCount) {
+                    remarkText = "INCREDIBLE!";
+                    resetShapes += comboCount - 4;
+                    playSound("incredible");
+                }
                 break;
         }
-        remark.textContent = remarkText;
-        points.textContent = comboCount + "+";
+        if (dimensionColorMatchedCount) {
+            modifyElementDisplay(colorMatchedText, "block");
+            colorMatchedText.textContent = `COLOR MATCHED!! x${dimensionColorMatchedCount}`;
+        }
+        else {
+            modifyElementDisplay(colorMatchedText, "none");
+        }
+        //if bomb,resetShapes,spin
+        if (comboCount) {
+            modifyElementDisplay(remark, "block");
+            modifyElementDisplay(points, "block");
+            remark.textContent = remarkText;
+            points.textContent = comboCount * 50 + "+";
+        }
+        else {
+            modifyElementDisplay(remark, "none");
+            modifyElementDisplay(points, "none");
+        }
+        //Spin
+        if (spin) {
+            spinCount2.textContent = String(spin);
+            specialtems.spin += spin;
+            modifyElementDisplay(specialItemsRewardDisplay[0], "block");
+        }
+        else {
+            modifyElementDisplay(specialItemsRewardDisplay[0], "none");
+        }
+        //Reset shapes
+        if (resetShapes) {
+            resetShapesCount2.textContent = String(resetShapes);
+            specialtems.resetShapes += resetShapes;
+            modifyElementDisplay(specialItemsRewardDisplay[1], "block");
+        }
+        else {
+            modifyElementDisplay(specialItemsRewardDisplay[1], "none");
+        }
+        //Bomb
+        if (bomb) {
+            bombCount2.textContent = String(bomb);
+            specialtems.bomb += bomb;
+            modifyElementDisplay(specialItemsRewardDisplay[2], "block");
+        }
+        else {
+            modifyElementDisplay(specialItemsRewardDisplay[2], "none");
+        }
+        if (!bomb && !spin && !resetShapes) {
+            modifyElementDisplay(colorMatched, "none");
+        }
+        else {
+            modifyElementDisplay(colorMatched, "block");
+        }
+        saveToLocalStorage("items", specialtems);
+        updateSpecialItemsCountDisplay();
         remarkContainer.style.scale = String(1);
         setTimeout(() => {
             remarkContainer.style.scale = String(0);
-        }, 2000);
+        }, 3500);
     }
 };
