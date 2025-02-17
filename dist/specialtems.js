@@ -45,23 +45,32 @@ export const updateSpecialItemsCountDisplay = () => {
     spinCount.textContent = String(specialtems.spin);
     resetShapesCount.textContent = String(specialtems.resetShapes);
 };
+const about = () => {
+    return `
+    <h4 style="text-decoration:underline">Ways To Get ?</h4>
+    <ul style="text-align:left">
+        <li>Clear two dimensions</li>
+        <li>Clear dimension with a matching color</li>
+    </ul>
+    `;
+};
 const itemsInfo = [
     {
         name: "SPIN",
-        about: `ggggggfff`,
+        about: about(),
     },
     {
         name: "RESET SHAPES",
-        about: `ggggggfff`,
+        about: about(),
     },
     {
         name: "BOMB",
-        about: `ggggggfff`,
+        about: about(),
     },
 ];
 export const toggleItemInfoDisplay = (display = "flex", index = 0) => {
     const itemInfo = itemsInfo[index];
     itemName.textContent = itemInfo.name;
-    aboutItem.textContent = itemInfo.about;
+    aboutItem.innerHTML = itemInfo.about;
     modifyElementDisplay(itemInfoDisplay, display);
 };

@@ -133,11 +133,11 @@ export class Shape {
             });
         };
         const { pivotX, pivotY, idlePivotX, idlePivotY } = this.Pivots;
-        // Rotate the main shape and idle shape
         this.currentRotate++;
         if (this.currentRotate > this.rotates) {
             this.currentRotate = 0;
         }
+        // Rotate the main shape and idle shape
         this.mainShape = spinShape(this.mainShape, pivotX, pivotY);
         this.idleShape = spinShape(this.boxes, idlePivotX, idlePivotY, idle);
         this.boxes = this.idleShape;
@@ -195,7 +195,7 @@ const generateShape = (shape) => {
 };
 //Populates shapes array
 export const populateShapes = () => {
-    const allColors = [matchedColor, "red"];
+    const allColors = [matchedColor, "red", "yellow", "green", "purple"];
     const shapes = [];
     for (let i = 0; i < 3; i++) {
         const { emoji, rotates } = shapesEmoji[Math.floor(Math.random() * shapesEmoji.length)];

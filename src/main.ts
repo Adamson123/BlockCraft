@@ -283,6 +283,7 @@ bombItem.addEventListener("click", () => {
 
 document.querySelectorAll(".itemInfo")!.forEach((btn, index) => {
     btn.addEventListener("click", (event) => {
+        playSound("click");
         event.stopImmediatePropagation();
         toggleItemInfoDisplay("flex", index);
     });
