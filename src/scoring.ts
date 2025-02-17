@@ -66,16 +66,17 @@ export const displayRemark = (
                 break;
             case 2:
                 remarkText = "GOOD JOB!";
+                spin++;
                 playSound("good-job");
                 break;
             case 3:
                 remarkText = "AMAZING!";
-                spin++;
+                bomb++;
                 playSound("amazing");
                 break;
             case 4:
                 remarkText = "INCREDIBLE!";
-                bomb++;
+                resetShapes++;
                 playSound("incredible");
                 break;
             default:
