@@ -12,6 +12,7 @@ const pauseContainer =
 const gameState = document.querySelector(".gameState")!;
 const gameScoreHTML = document.querySelector(".gameScore")!;
 const scoreLabel = document.querySelector(".scoreLabel")!;
+const playBtn = document.querySelector<HTMLButtonElement>(".playBtn")!;
 
 export const checkLose = (
     boxes: Box[],
@@ -58,8 +59,10 @@ export const toggleGameState = (gameOver: boolean = false) => {
         pause = true;
     }
     if (gameOver) {
+        modifyElementDisplay(playBtn, "none");
         gameState.textContent = "GAME OVER";
     } else {
+        modifyElementDisplay(playBtn, "inherit");
         gameState.textContent = "PAUSE";
     }
     if (gameScore.surpassedHighScore) {

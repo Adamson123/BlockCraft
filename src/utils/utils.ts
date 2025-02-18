@@ -40,7 +40,7 @@ export const clickedItem = (
 
 export const modifyElementDisplay = (
     element: HTMLParagraphElement | HTMLDivElement | HTMLHeadElement,
-    display: "none" | "block" | "flex" | "inline-block"
+    display: "none" | "block" | "flex" | "inline-block" | "inherit"
 ) => {
     element.style.display = display;
 };

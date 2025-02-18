@@ -128,7 +128,7 @@ const handleMouseMovement = (event: MouseEvent | TouchEvent) => {
 const checkLoseCallback = (box: Box, lastBox: Box) => {
     box.color = hoverColor;
     draw(shapes, currentShape, boxes);
-    if (lastBox.index === box.index) toggleGameState();
+    if (lastBox.index === box.index) toggleGameState(true);
 };
 const resetBoxesCallback = () => {
     checkLose(boxes, shapes, checkLoseCallback);

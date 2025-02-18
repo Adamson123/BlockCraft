@@ -106,7 +106,7 @@ const checkLoseCallback = (box, lastBox) => {
     box.color = hoverColor;
     draw(shapes, currentShape, boxes);
     if (lastBox.index === box.index)
-        toggleGameState();
+        toggleGameState(true);
 };
 const resetBoxesCallback = () => {
     checkLose(boxes, shapes, checkLoseCallback);

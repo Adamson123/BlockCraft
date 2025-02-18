@@ -111,7 +111,7 @@ export const displayRemark = (
         if (spin) {
             spinCount2.textContent = String(spin);
             specialtems.spin += spin;
-            modifyElementDisplay(specialItemsRewardDisplay[0], "block");
+            modifyElementDisplay(specialItemsRewardDisplay[0], "inherit");
         } else {
             modifyElementDisplay(specialItemsRewardDisplay[0], "none");
         }
@@ -120,7 +120,7 @@ export const displayRemark = (
         if (resetShapes) {
             resetShapesCount2.textContent = String(resetShapes);
             specialtems.resetShapes += resetShapes;
-            modifyElementDisplay(specialItemsRewardDisplay[1], "block");
+            modifyElementDisplay(specialItemsRewardDisplay[1], "inherit");
         } else {
             modifyElementDisplay(specialItemsRewardDisplay[1], "none");
         }
@@ -129,7 +129,7 @@ export const displayRemark = (
         if (bomb) {
             bombCount2.textContent = String(bomb);
             specialtems.bomb += bomb;
-            modifyElementDisplay(specialItemsRewardDisplay[2], "block");
+            modifyElementDisplay(specialItemsRewardDisplay[2], "inherit");
         } else {
             modifyElementDisplay(specialItemsRewardDisplay[2], "none");
         }
