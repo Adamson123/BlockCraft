@@ -28,6 +28,8 @@ let shapes = shapesFromStorage?.length
 const updateShapePosition = (x, y) => {
     if (!currentShape || spinMode)
         return;
+    if (!currentShape.isAccomodable)
+        return;
     // Calculate differences based on the first box position
     const dx = x - currentShape.boxes[0].x - currentShape.width / 2;
     const dy = y - currentShape.findHeight() - 10;
@@ -50,13 +52,14 @@ const handleShapeSelection = (event) => {
         }
         if (clicked) {
             currentShape = shape;
-            if (!spinMode)
+            if (!spinMode && currentShape.isAccomodable)
                 currentShape.toMainShape();
             break;
         }
     }
     if (currentShape) {
-        updateShapePosition(x, y);
+        if (currentShape.isAccomodable)
+            updateShapePosition(x, y);
         if (spinMode) {
             currentShape.spin();
             saveToLocalStorage("shapes", shapes);
