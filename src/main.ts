@@ -253,6 +253,7 @@ resetShapesItem.addEventListener("click", () => {
         updateSpecialItemsCountDisplay();
         shapes = populateShapes();
         saveToLocalStorage("shapes", shapes);
+        checkLose(boxes, shapes, checkLoseCallback);
         draw(shapes, currentShape, boxes, spinMode);
     } else {
         toggleItemInfoDisplay("flex", 1);

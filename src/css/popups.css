@@ -17,17 +17,21 @@
 }
 
 .remarkContainer h3,
-.remarkContainer h4,
 .remarkContainer p {
     margin: 0;
     padding: 0;
+}
+.remarkContainer h4 {
+    padding: 0;
+    margin: 0 0 10px 0;
 }
 .remarkContainer h3 {
     color: white;
     font-size: 30px;
     font-weight: bolder;
-    text-shadow: -2px -2px skyblue, 2px 2px skyblue, -2px 2px skyblue,
-        2px 2px skyblue;
+    text-shadow: -2px -2px var(--var-orange-color),
+        2px 2px var(--var-orange-color), -2px 2px var(--var-orange-color),
+        2px 2px var(--var-orange-color);
 }
 .remarkContainer p {
     font-weight: bold;
@@ -41,10 +45,8 @@
     align-items: center;
     justify-content: center;
     gap: 20px;
-    background-color: var(--var-transparent-black);
     padding: 7px 10px;
     border-radius: 15px;
-    margin-top: 10px;
 }
 .specialItemsRewardDisplay img {
     width: 25px;
@@ -61,9 +63,16 @@
     gap: 5px;
 }
 
-.specialItemsRewardDisplay div > span {
+.rewardContainer span {
     display: flex;
     align-items: center;
+    justify-content: center;
+}
+
+.rewardContainer {
+    background-color: var(--var-transparent-black);
+    padding: 10px;
+    border-radius: 10px;
 }
 
 .itemInfoDisplay p {
@@ -104,7 +113,7 @@
 }
 .pause h3,
 .info h3 {
-    color: skyblue;
+    color: var(--var-orange-color);
     font-weight: bold;
     font-size: 25px;
     text-shadow: -1px -1px black, 1px 1px black, -1px 1px black, 1px 1px black;

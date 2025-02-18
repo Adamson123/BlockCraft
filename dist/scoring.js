@@ -7,14 +7,14 @@ const scoreText = document.querySelector(".score");
 const remarkContainer = document.querySelector(".remarkContainer");
 const points = document.querySelector(".points");
 const remark = document.querySelector(".remark");
-const colorMatched = document.querySelector(".colorMatched");
+const rewardContainer = document.querySelector(".rewardContainer");
 const specialItemsRewardDisplay = document
     .querySelector(".specialItemsRewardDisplay")
     .querySelectorAll("div");
 const bombCount2 = document.querySelector(".bombCount2");
 const spinCount2 = document.querySelector(".spinCount2");
 const resetShapesCount2 = document.querySelector(".resetShapesCount2");
-const colorMatchedText = colorMatched.querySelector("h4");
+const colorMatchedText = rewardContainer.querySelector("h4");
 export const gameScore = getFromLocalStorage("score") || {
     highestScore: 0,
     score: 0,
@@ -43,29 +43,29 @@ export const displayRemark = (comboCount, dimensionColorMatchedCount) => {
         let bomb = dimensionColorMatchedCount;
         let resetShapes = dimensionColorMatchedCount;
         switch (comboCount) {
-            case 1:
+            case 1: //2d
                 remarkText = "NICE!";
+                spin++;
                 playSound("nice");
                 break;
-            case 2:
-                remarkText = "GOOD JOB!";
-                spin++;
-                playSound("good-job");
-                break;
-            case 3:
+            case 2: //3d
                 remarkText = "AMAZING!";
                 bomb++;
                 playSound("amazing");
                 break;
-            case 4:
-                remarkText = "INCREDIBLE!";
+            case 3: //4d
+                remarkText = "INCREDIBLE";
                 resetShapes++;
                 playSound("incredible");
                 break;
+            // case 4://5d
+            //     remarkText = "INCREDIBLE!";
+            //     playSound("incredible");
+            //     break;
             default:
-                if (comboCount > 4) {
+                if (comboCount > 3) {
                     remarkText = "INCREDIBLE!";
-                    resetShapes += comboCount - 4;
+                    resetShapes += comboCount - 3;
                     playSound("incredible");
                 }
                 break;
@@ -116,10 +116,10 @@ export const displayRemark = (comboCount, dimensionColorMatchedCount) => {
             modifyElementDisplay(specialItemsRewardDisplay[2], "none");
         }
         if (!bomb && !spin && !resetShapes) {
-            modifyElementDisplay(colorMatched, "none");
+            modifyElementDisplay(rewardContainer, "none");
         }
         else {
-            modifyElementDisplay(colorMatched, "block");
+            modifyElementDisplay(rewardContainer, "block");
         }
         saveToLocalStorage("items", specialtems);
         updateSpecialItemsCountDisplay();

@@ -64,15 +64,15 @@ const about = (num: number) => {
 const itemsInfo = [
     {
         name: "SPIN",
-        about: about(3),
+        about: about(2),
     },
     {
         name: "RESET SHAPES",
-        about: about(5),
+        about: about(4),
     },
     {
         name: "BOMB",
-        about: about(4),
+        about: about(3),
     },
 ];
 
