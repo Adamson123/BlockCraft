@@ -55,7 +55,7 @@ const about = (num: number) => {
     return `
     <h4 style="text-decoration: underline;">Ways to Get ?</h4>
     <ul style="text-align: left;">
-        <li>Clear ${num}${num === 6 ? " or more" : ""} dimensions.</li>
+        <li>Clear ${num}${num === 4 ? " or more" : ""} dimensions.</li>
         <li>Clear a dimension with a matching color.</li>
     </ul>
 `;
