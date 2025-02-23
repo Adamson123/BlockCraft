@@ -22,7 +22,11 @@ const spinCount2 = document.querySelector(".spinCount2")!;
 const resetShapesCount2 = document.querySelector(".resetShapesCount2")!;
 const colorMatchedText = rewardContainer.querySelector("h4")!;
 
-export const gameScore = getFromLocalStorage("score") || {
+export const gameScore: {
+    highestScore: number;
+    score: number;
+    surpassedHighScore: boolean;
+} = getFromLocalStorage("score") || {
     highestScore: 0,
     score: 0,
     surpassedHighScore: false,

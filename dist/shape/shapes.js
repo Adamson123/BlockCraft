@@ -1,4 +1,5 @@
 import { boxWidth, boardHeight, matchedColor, matchedStrokeColor, boxHeight, boardWidth, idle, hoverColor, ctx, } from "../globals.js";
+import { gameScore } from "../scoring.js";
 import { saveToLocalStorage } from "../utils/localStorageUtils.js";
 import { shapesEmoji } from "./shapesEmoji.js";
 const spinSvg = new Image();
@@ -189,25 +190,41 @@ const generateShape = (shape) => {
         }
     }
     return {
-        shape: mainShape,
+        mainShape,
         idleShape,
     };
+};
+const shapesInArray = shapesEmoji.map((shape) => {
+    const { idleShape, mainShape } = generateShape(shape.emoji);
+    return { mainShape, idleShape, rotates: shape.rotates };
+});
+const getMaxBoxes = () => {
+    if (gameScore.score >= 1500 && gameScore.score < 2500) {
+        return 5;
+    }
+    else if (gameScore.score >= 2500) {
+        return 9;
+    }
+    else {
+        return 4;
+    }
 };
 //Populates shapes array
 export const populateShapes = () => {
     const allColors = [matchedColor, "red", "yellow", "green", "purple"];
     const shapes = [];
+    const maxBoxes = getMaxBoxes();
+    const shapesToAdd = shapesInArray.filter((shape) => shape.mainShape.length <= maxBoxes);
     for (let i = 0; i < 3; i++) {
-        const { emoji, rotates } = shapesEmoji[Math.floor(Math.random() * shapesEmoji.length)];
+        const { mainShape, idleShape, rotates } = shapesToAdd[Math.floor(Math.random() * shapesToAdd.length)];
         const color = allColors[Math.floor(Math.random() * allColors.length)];
-        // Adjust each idle shape's x position
-        const { shape, idleShape } = generateShape(emoji);
+        // Adjust each idle idelShape's x position
         const adjustedShape = idleShape.map((box) => ({
             ...box,
             x: box.x + i * (boardWidth / 3) + boardWidth / 10 + 5,
         }));
         const shapeIns = new Shape({
-            mainShape: shape,
+            mainShape,
             idleShape: adjustedShape,
             index: i,
             color,

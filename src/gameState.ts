@@ -43,7 +43,7 @@ export const checkLose = (
         occupiedBoxes.forEach((box, index) => {
             setTimeout(() => {
                 callback(box, lastBox);
-            }, index * 10);
+            }, index * 20);
         });
     }
 };

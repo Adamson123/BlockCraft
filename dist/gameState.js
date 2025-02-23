@@ -29,7 +29,7 @@ export const checkLose = (boxes, shapes, callback) => {
         occupiedBoxes.forEach((box, index) => {
             setTimeout(() => {
                 callback(box, lastBox);
-            }, index * 10);
+            }, index * 20);
         });
     }
 };
