@@ -102,7 +102,7 @@ export const shapesEmoji = [
     {
         emoji: `⬜🟥🟥
                 🟥🟥⬜`,
-        rotates: 3,
+        rotates: 1,
     },
     {
         emoji: `🟥🟥🟥
