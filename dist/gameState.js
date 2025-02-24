@@ -8,7 +8,7 @@ const gameState = document.querySelector(".gameState");
 const gameScoreHTML = document.querySelector(".gameScore");
 const scoreLabel = document.querySelector(".scoreLabel");
 const playBtn = document.querySelector(".playBtn");
-export const checkLose = (boxes, shapes, callback) => {
+export const checkGameOver = (boxes, shapes, callback) => {
     let isSpaceAvailable = false;
     //Checking if atleast one shape in the shape array is accomodatable
     for (const shape of shapes) {

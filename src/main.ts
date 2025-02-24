@@ -8,7 +8,7 @@ import Box, { populateBoxes } from "./box/box.js";
 import { draw } from "./draw.js";
 import { clickedItem, getMousePosition } from "./utils/utils.js";
 import { playSound, toggleFullscreen, toggleSoundMode } from "./settings.js";
-import { checkLose, toggleGameState } from "./gameState.js";
+import { checkGameOver, toggleGameState } from "./gameState.js";
 import { resetBoxesInOccupiedDimensions } from "./box/boxesHandler.js";
 import { gameScore, updateScore } from "./scoring.js";
 import {
@@ -83,7 +83,7 @@ const handleShapeSelection = (event: MouseEvent | TouchEvent) => {
         if (spinMode) {
             currentShape.spin();
             saveToLocalStorage("shapes", shapes);
-            checkLose(boxes, shapes, checkLoseCallback);
+            checkGameOver(boxes, shapes, checkGameOverCallback);
         }
     }
 };
@@ -125,13 +125,13 @@ const handleMouseMovement = (event: MouseEvent | TouchEvent) => {
     }
 };
 
-const checkLoseCallback = (box: Box, lastBox: Box) => {
+const checkGameOverCallback = (box: Box, lastBox: Box) => {
     box.color = hoverColor;
     draw(shapes, currentShape, boxes);
     if (lastBox.index === box.index) toggleGameState(true);
 };
 const resetBoxesCallback = () => {
-    checkLose(boxes, shapes, checkLoseCallback);
+    checkGameOver(boxes, shapes, checkGameOverCallback);
     saveToLocalStorage("boxes", boxes);
     draw(shapes, currentShape, boxes);
 };
@@ -174,7 +174,8 @@ const handleMouseOut = () => {
         currentShape = undefined;
         if (!shapes.length) shapes = populateShapes();
 
-        if (!noOccupiedDimension) checkLose(boxes, shapes, checkLoseCallback);
+        if (!noOccupiedDimension)
+            checkGameOver(boxes, shapes, checkGameOverCallback);
         draw(shapes, currentShape, boxes);
     } else {
         if (currentShape || (bomb.bombSelected && !bomb.size))
@@ -209,6 +210,7 @@ const handleMouseOut = () => {
 draw(shapes, currentShape, boxes);
 updateScore(0, 0, 0);
 updateSpecialItemsCountDisplay();
+checkGameOver(boxes, shapes, checkGameOverCallback);
 
 spinShapeItem.addEventListener("click", () => {
     //we have spin left? enter!
@@ -253,7 +255,7 @@ resetShapesItem.addEventListener("click", () => {
         updateSpecialItemsCountDisplay();
         shapes = populateShapes();
         saveToLocalStorage("shapes", shapes);
-        checkLose(boxes, shapes, checkLoseCallback);
+        checkGameOver(boxes, shapes, checkGameOverCallback);
         draw(shapes, currentShape, boxes, spinMode);
     } else {
         toggleItemInfoDisplay("flex", 1);

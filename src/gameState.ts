@@ -14,7 +14,7 @@ const gameScoreHTML = document.querySelector(".gameScore")!;
 const scoreLabel = document.querySelector(".scoreLabel")!;
 const playBtn = document.querySelector<HTMLButtonElement>(".playBtn")!;
 
-export const checkLose = (
+export const checkGameOver = (
     boxes: Box[],
     shapes: Shape[],
     callback: (box: Box, lastBox: Box) => void
