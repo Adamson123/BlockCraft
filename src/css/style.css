@@ -23,6 +23,10 @@ html {
     overflow-y: hidden;
     padding-top: 5px;
 }
+body{
+    overflow-y:hidden;
+}
+
 
 .board {
     /* box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5); */
