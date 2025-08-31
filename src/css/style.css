@@ -20,7 +20,7 @@ html {
     background-position: center;
     background-size: cover;
     height: 100vh;
-    overflow-y: hidden;
+    overflow: hidden;
     padding-top: 5px;
 }
 
